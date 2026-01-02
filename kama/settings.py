@@ -28,7 +28,8 @@ DEBUG = False
 #DEBUG = True
 
 
-ALLOWED_HOSTS = ['kama.pythonanywhere.com']
+ALLOWED_HOSTS = ['sojuHanjan.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://sojuHanjan.pythonanywhere.com']
 
 
 # Application definition
