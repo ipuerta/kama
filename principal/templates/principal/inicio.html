@@ -1,0 +1,57 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+<style>
+    .hub-card {
+        transition: transform 0.2s;
+        border-radius: 25px;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+    .hub-card:active { transform: scale(0.95); }
+    .icon-box { font-size: 3.5rem; margin-bottom: 15px; }
+</style>
+
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold">KAMA Hub</h1>
+    <p class="text-secondary">Selecciona una sección</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-6 col-md-3">
+        <a href="{% url 'premios' %}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm hub-card bg-warning bg-opacity-25">
+                <div class="icon-box">🏆</div>
+                <h5 class="fw-bold">Premios KAMA</h5>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <a href="{% url 'wiki' %}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm hub-card bg-info bg-opacity-25">
+                <div class="icon-box">📚</div>
+                <h5 class="fw-bold">Wiki</h5>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <a href="{% url 'videos' %}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm hub-card bg-danger bg-opacity-25">
+                <div class="icon-box">🎬</div>
+                <h5 class="fw-bold">Vídeos</h5>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <a href="{% url 'login' %}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm hub-card bg-secondary bg-opacity-25">
+                <div class="icon-box">🔑</div>
+                <h5 class="fw-bold">Login</h5>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

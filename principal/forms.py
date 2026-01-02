@@ -1,0 +1,35 @@
+from django import forms
+from .models import Grupos, Pais, Ciudad, Compañias
+
+class GirlGroupForm(forms.ModelForm):
+    class Meta:
+        model = Grupos
+        # Definimos los campos que pediste
+        fields = ['nombre', 'tipo', 'nombre_fandom', 'fecha_debut', 'pais', 'ciudad', 'compañia', 'mega']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'tipo': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'nombre_fandom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'fecha_debut': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'pais': forms.Select(attrs={'class': 'form-select'}),
+            'ciudad': forms.Select(attrs={'class': 'form-select'}),
+            'compañia': forms.Select(attrs={'class': 'form-select'}),
+            'mega': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Bloqueamos el campo 'tipo' para que siempre sea GG
+        self.fields['tipo'].initial = 'GG'
+        # Esto hace que aunque el usuario intente cambiarlo en el HTML, el servidor lo ignore
+        self.fields['tipo'].disabled = True
+
+class PaisForm(forms.ModelForm):
+    class Meta:
+        model = Pais
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_nombre_pais'})
+        }

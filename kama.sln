@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.36631.11
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "kama", "kama.pyproj", "{E4FB5A3F-18F2-45F9-989D-556560F48302}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4FB5A3F-18F2-45F9-989D-556560F48302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4FB5A3F-18F2-45F9-989D-556560F48302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4FB5A3F-18F2-45F9-989D-556560F48302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4FB5A3F-18F2-45F9-989D-556560F48302}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {718AE599-126F-4BD8-AE3C-154BBB88E900}
+	EndGlobalSection
+EndGlobal
