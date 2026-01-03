@@ -14,7 +14,7 @@ class GirlGroupForm(forms.ModelForm):
             'nombre_fandom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
             'fecha_debut': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'pais': forms.Select(attrs={'class': 'form-select'}),
-            'ciudad': forms.Select(attrs={'class': 'form-select'}),
+            'ciudad': forms.Select(attrs={'class': 'form-select', 'disabled': 'disabled'}),
             'compañia': forms.Select(attrs={'class': 'form-select'}),
             'mega': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
         }
@@ -22,7 +22,7 @@ class GirlGroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Bloqueamos el campo 'tipo' para que siempre sea GG
-        self.fields['tipo'].initial = 'GG'
+        self.fields['tipo'].initial = 'GG' 
         # Esto hace que aunque el usuario intente cambiarlo en el HTML, el servidor lo ignore
         self.fields['tipo'].disabled = True
 
@@ -32,4 +32,12 @@ class PaisForm(forms.ModelForm):
         fields = ['nombre']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_nombre_pais'})
+        }
+
+class CompañiasForm(forms.ModelForm):
+    class Meta:
+        model = Compañias
+        fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_compañia'})
         }

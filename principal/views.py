@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from datetime import datetime
-from .models import Artista, Grupos, Genero, Pais
+from .models import Artista, Grupos, Genero, Pais, Ciudad, Compañias
 from .forms import GirlGroupForm
 from django.views.decorators.csrf import csrf_protect
 
@@ -98,7 +98,8 @@ def alta_girl_group(request):
             grupo = form.save(commit=False)
             grupo.tipo = 'GG'
             grupo.save()
-            return redirect('videos') # Redirigir a la lista tras guardar
+            # return redirect('videos') # Redirigir a la lista tras guardar
+            return render(request, 'principal/videos.html')
     else:
         # Iniciamos el formulario con el valor por defecto
         form = GirlGroupForm(initial={'tipo': 'GG'})
@@ -114,8 +115,51 @@ def ajax_crear_pais(request):
                 # get_or_create devuelve una tupla: (objeto, creado_si_o_no)
                 pais, created = Pais.objects.get_or_create(nombre=nombre)
                 return JsonResponse({
-                    'id': pais.id, # Asegúrate de que tu modelo tiene id (el por defecto)
+                    'id': pais.id,
                     'nombre': pais.nombre
+                }, status=200)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Nombre no proporcionado'}, status=400)
+
+# views.py
+def ajax_cargar_ciudades(request):
+    pais_id = request.GET.get('pais_id')
+    ciudades = Ciudad.objects.filter(pais_id=pais_id).order_by('nombre')
+    
+    # Creamos una lista de diccionarios para enviar como JSON
+    lista_ciudades = [{'id': c.id, 'nombre': c.nombre} for c in ciudades]
+    return JsonResponse(lista_ciudades, safe=False)
+
+def ajax_crear_ciudad(request):
+    if request.method == "POST":
+        nombre = request.POST.get('nombre')
+        pais_id = request.POST.get('pais_id') # Recibiremos el ID, es más seguro
+        
+        if nombre and pais_id:
+            try:
+                # Buscamos el objeto Pais por su ID
+                pais_obj = Pais.objects.get(id=pais_id)
+                ciudad = Ciudad.objects.create(nombre=nombre, pais=pais_obj)
+                return JsonResponse({'id': ciudad.id, 'nombre': ciudad.nombre}, status=200)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+                
+    return JsonResponse({'error': 'Faltan datos'}, status=400)
+
+@csrf_protect
+def ajax_crear_compañia(request):
+    if request.method == "POST":
+        nombre = request.POST.get('nombre', '').strip()
+
+        if nombre:
+            try:
+                # get_or_create devuelve una tupla: (objeto, creado_si_o_no)
+                compañia, created = Compañias.objects.get_or_create(nombre=nombre)
+                return JsonResponse({
+                    'id': compañia.id_compañia,
+                    'nombre': compañia.nombre
                 }, status=200)
             except Exception as e:
                 return JsonResponse({'error': str(e)}, status=500)
