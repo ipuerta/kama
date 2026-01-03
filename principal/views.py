@@ -20,6 +20,10 @@ def wiki(request):
     return render(request, 'principal/wiki.html')
 
 def videos(request):
+    girl_groups = Grupos.objects.none()
+    bandas = Grupos.objects.none()
+    solistas = Artista.objects.none()
+
     # Obtener parámetros del formulario
     es_peticion_busqueda = 'q' in request.GET or 'generos' in request.GET or 'totales' in request.GET
     query = request.GET.get('q', '')
