@@ -1,5 +1,6 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.db.models.functions import Lower
 from datetime import datetime
 from .models import Artista, Grupos, Genero, Pais, Ciudad, Compañias
 from .forms import GirlGroupForm
@@ -48,10 +49,10 @@ def videos(request):
 
         # Separamos por tipo y ordenamos
         if not totales_seleccionados or 'GG' in totales_seleccionados:
-            girl_groups = grupos_base.filter(tipo='GG').order_by('nombre')
+            girl_groups = grupos_base.filter(tipo='GG').order_by(Lower('nombre'))
         
         if not totales_seleccionados or 'BAND' in totales_seleccionados:
-            bandas = grupos_base.filter(tipo='BAND').order_by('nombre')
+            bandas = grupos_base.filter(tipo='BAND').order_by(Lower('nombre'))
 
     # --- LÓGICA PARA ARTISTAS (Solistas) ---
     if not totales_seleccionados or 'SOLO' in totales_seleccionados: # Asumiendo 'SOLO' para Artistas
@@ -63,7 +64,7 @@ def videos(request):
         if generos_seleccionados:
             artistas_base = artistas_base.filter(artistas_generos__genero__nombre__in=generos_seleccionados).distinct()
         
-        solistas = artistas_base.order_by('nombre')
+        solistas = artistas_base.order_by(Lower('nombre'))
 
     
     generos_estaticos = [
@@ -102,13 +103,18 @@ def alta_girl_group(request):
             grupo = form.save(commit=False)
             grupo.tipo = 'GG'
             grupo.save()
-            # return redirect('videos') # Redirigir a la lista tras guardar
-            return render(request, 'principal/videos.html')
+
+            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+            if next_url:
+                return redirect(next_url)
+            return redirect('videos') # Redirigir a la lista tras guardar
+            # return render(request, 'principal/videos.html')
     else:
         # Iniciamos el formulario con el valor por defecto
         form = GirlGroupForm(initial={'tipo': 'GG'})
-    
-    return render(request, 'principal/alta_girl_group.html', {'form': form})
+
+    next_url = request.GET.get('next', '')
+    return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
 
 @csrf_protect
 def ajax_crear_pais(request):

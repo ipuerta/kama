@@ -12,6 +12,8 @@
             <form method="POST">
                 {% csrf_token %}
 
+                <input type="hidden" name="next" value="{{ next_url }}">
+
                 {% for field in form %}
                 <div class="mb-3">
                     <label class="form-label fw-bold text-muted small">{{ field.label|upper }}</label>

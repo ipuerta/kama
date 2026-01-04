@@ -71,7 +71,7 @@
             <li class="list-group-item py-3 text-muted italic">No hay grupos que coincidan</li>
             {% endfor %}
             {% if user.is_authenticated %}
-            <a href="{% url 'alta_girl_group' %}" class="list-group-item list-group-item-action py-3 text-center text-primary fw-bold bg-light">
+            <a href="{% url 'alta_girl_group' %}?next={{ request.get_full_path|urlencode }}" class="list-group-item list-group-item-action py-3 text-center text-primary fw-bold bg-light">
                 + Añadir Nuevo Girl Group
             </a>
             {% endif %}
