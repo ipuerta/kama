@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.db.models.functions import Lower
 from datetime import datetime
 from .models import Artista, Grupos, Genero, Pais, Ciudad, Compañias
-from .forms import GirlGroupForm
+from .forms import GirlGroupForm, ArtistaForm
 from django.views.decorators.csrf import csrf_protect
 
 def inicio(request):
@@ -115,6 +115,25 @@ def alta_girl_group(request):
 
     next_url = request.GET.get('next', '')
     return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
+
+def alta_artista(request):
+    if request.method == 'POST':
+        form = ArtistaForm(request.POST)
+        if form.is_valid():
+            grupo = form.save(commit=False)
+            grupo.save()
+
+            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+            if next_url:
+                return redirect(next_url)
+            return redirect('videos') # Redirigir a la lista tras guardar
+            # return render(request, 'principal/videos.html')
+    else:
+        # Iniciamos el formulario con el valor por defecto
+        form = ArtistaForm()
+
+    next_url = request.GET.get('next', '')
+    return render(request, 'principal/alta_artista.html', {'form': form, 'next_url': next_url})
 
 @csrf_protect
 def ajax_crear_pais(request):

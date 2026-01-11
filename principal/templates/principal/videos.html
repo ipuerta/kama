@@ -119,9 +119,9 @@
             <li class="list-group-item py-3 text-muted italic">No hay artistas que coincidan</li>
             {% endfor %}
             {% if user.is_authenticated %}
-            <button type="button" class="list-group-item list-group-item-action py-3 text-center text-info fw-bold bg-light">
+            <a href="{% url 'alta_artista' %}?next={{ request.get_full_path|urlencode }}" class="list-group-item list-group-item-action py-3 text-center text-primary fw-bold bg-light">
                 + Añadir Nuevo Artista
-            </button>
+            </a>
             {% endif %}
         </ul>
     </div>

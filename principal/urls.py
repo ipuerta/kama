@@ -18,6 +18,7 @@ urlpatterns = [
         template_name='principal/password_change_done.html'
     ), name='password_change_done'),
     path('videos/nuevo-girl-group/', views.alta_girl_group, name='alta_girl_group'),
+    path('videos/nuevo-artista/', views.alta_artista, name='alta_artista'),
     path('ajax/crear-pais/', views.ajax_crear_pais, name='ajax_crear_pais'),
     path('ajax/cargar-ciudades/', views.ajax_cargar_ciudades, name='ajax_cargar_ciudades'),
     path('ajax/crear-ciudad/', views.ajax_crear_ciudad, name='ajax_crear_ciudad'),
