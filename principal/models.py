@@ -99,7 +99,6 @@ class Grupos(models.Model):
     nombre_fandom = models.CharField(max_length=100, null=True, blank=True)
     fecha_debut = models.DateField()
     pais = models.ForeignKey(Pais, on_delete=models.CASCADE)
-    ciudad = models.ForeignKey(Ciudad, on_delete=models.CASCADE)
     compañia = models.ForeignKey(Compañias, on_delete=models.CASCADE)
     mega = models.CharField(max_length=100)
     

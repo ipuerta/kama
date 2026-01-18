@@ -1,9 +1,9 @@
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.functions import Lower
 from datetime import datetime
 from .models import Artista, Grupos, Genero, Pais, Ciudad, Compañias
-from .forms import GirlGroupForm, ArtistaForm
+from .forms import GirlGroupForm, BandaForm, ArtistaForm
 from django.views.decorators.csrf import csrf_protect
 
 def inicio(request):
@@ -116,6 +116,27 @@ def alta_girl_group(request):
     next_url = request.GET.get('next', '')
     return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
 
+def alta_banda(request):
+    if request.method == 'POST':
+        form = BandaForm(request.POST)
+        if form.is_valid():
+            # Forzamos el tipo BAND antes de guardar por seguridad
+            grupo = form.save(commit=False)
+            grupo.tipo = 'BAND'
+            grupo.save()
+
+            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+            if next_url:
+                return redirect(next_url)
+            return redirect('videos') # Redirigir a la lista tras guardar
+            # return render(request, 'principal/videos.html')
+    else:
+        # Iniciamos el formulario con el valor por defecto
+        form = GirlGroupForm(initial={'tipo': 'BAND'})
+
+    next_url = request.GET.get('next', '')
+    return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
+
 def alta_artista(request):
     if request.method == 'POST':
         form = ArtistaForm(request.POST)
@@ -194,3 +215,11 @@ def ajax_crear_compañia(request):
                 return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Nombre no proporcionado'}, status=400)
+
+def detalle_grupo(request, id_grupo):
+    # Buscar el grupo
+    grupo = get_object_or_404(Grupos, id_grupo=id_grupo)
+
+    return render(request, 'principal/detalle_grupo.html', {
+        'grupo': grupo
+        })

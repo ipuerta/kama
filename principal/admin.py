@@ -79,7 +79,7 @@ class ArtistaCompañiasAdmin(admin.ModelAdmin):
 @admin.register(Grupos)
 class GruposAdmin(admin.ModelAdmin):
     # 'id' es el nombre del campo automático que crea Django
-    list_display = ('id_grupo', 'tipo', 'nombre', 'nombre_fandom', 'fecha_debut', 'pais', 'ciudad', 'compañia', 'mega')
+    list_display = ('id_grupo', 'tipo', 'nombre', 'nombre_fandom', 'fecha_debut', 'pais', 'compañia', 'mega')
     
     # Opcional: permite que se pueda hacer clic en el nombre para editar
     list_display_links = ('nombre',)

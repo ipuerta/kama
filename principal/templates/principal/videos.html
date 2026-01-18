@@ -64,8 +64,9 @@
         <ul class="list-group shadow-sm rounded-3">
             {% for grupo in girl_groups %}
             <li class="list-group-item py-3 d-flex justify-content-between align-items-center">
-                {{ grupo.nombre }}
-                <small class="text-muted">></small>
+              <a href="{% url 'detalle_grupo' grupo.id_grupo %}" class="text-decoration-none text-dark">
+                <strong>{{ grupo.nombre }}</strong>
+              </a>
             </li>
             {% empty %}
             <li class="list-group-item py-3 text-muted italic">No hay grupos que coincidan</li>
@@ -89,15 +90,14 @@
             {% for grupo in bandas %}
             <li class="list-group-item py-3 d-flex justify-content-between align-items-center">
                 {{ grupo.nombre }}
-                <small class="text-muted">></small>
             </li>
             {% empty %}
             <li class="list-group-item py-3 text-muted italic">No hay bandas que coincidan</li>
             {% endfor %}
             {% if user.is_authenticated %}
-            <button type="button" class="list-group-item list-group-item-action py-3 text-center text-success fw-bold bg-light">
+            <a href="{% url 'alta_banda' %}?next={{ request.get_full_path|urlencode }}" class="list-group-item list-group-item-action py-3 text-center text-primary fw-bold bg-light">
                 + Añadir Nueva Banda
-            </button>
+            </a>
             {% endif %}
         </ul>
     </div>
@@ -113,7 +113,6 @@
             {% for artista in solistas %}
             <li class="list-group-item py-3 d-flex justify-content-between align-items-center">
                 {{ artista.nombre }}
-                <small class="text-muted">></small>
             </li>
             {% empty %}
             <li class="list-group-item py-3 text-muted italic">No hay artistas que coincidan</li>

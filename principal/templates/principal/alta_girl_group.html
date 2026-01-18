@@ -225,36 +225,36 @@
         .catch(error => console.error("Error:", error));
     };
 
-    //document.addEventListener('DOMContentLoaded', function() {
-    //const selectPais = document.querySelector('select[name="pais"]');
-    //const selectCiudad = document.querySelector('select[name="ciudad"]');
-    //const btnNuevoCiudad = document.getElementById('btnNuevoCiudad');
+    document.addEventListener('DOMContentLoaded', function() {
+    const selectPais = document.querySelector('select[name="pais"]');
+    const selectCiudad = document.querySelector('select[name="ciudad"]');
+    const btnNuevoCiudad = document.getElementById('btnNuevoCiudad');
 
-    //selectPais.addEventListener('change', function() {
-    //    const paisId = this.value;
+    selectPais.addEventListener('change', function() {
+        const paisId = this.value;
 
-    //    if (paisId) {
-    //        // 1. Desbloquear select de ciudad y su botón +
-    //         selectCiudad.disabled = false;
-    //         btnNuevoCiudad.disabled = false;
+        if (paisId) {
+            // 1. Desbloquear select de ciudad y su botón +
+             selectCiudad.disabled = false;
+             btnNuevoCiudad.disabled = false;
 
-    //        // 2. Cargar ciudades vía AJAX
-    //        fetch(`{% url 'ajax_cargar_ciudades' %}?pais_id=${paisId}`)
-    //            .then(response => response.json())
-    //            .then(data => {
-    //                selectCiudad.innerHTML = '<option value="">---------</option>';
-    //                data.forEach(ciudad => {
-    //                    const option = new Option(ciudad.nombre, ciudad.id);
-    //                    selectCiudad.add(option);
-    //                });
-    //            });
-    //    } else {
-    //        // Si el país queda vacío, bloqueamos todo
-    //        selectCiudad.innerHTML = '<option value="">---------</option>';
-    //        selectCiudad.disabled = true;
-    //        btnNuevoCiudad.disabled = true;
-    //    }
-    //});
+            // 2. Cargar ciudades vía AJAX
+            fetch(`{% url 'ajax_cargar_ciudades' %}?pais_id=${paisId}`)
+                .then(response => response.json())
+                .then(data => {
+                    selectCiudad.innerHTML = '<option value="">---------</option>';
+                    data.forEach(ciudad => {
+                        const option = new Option(ciudad.nombre, ciudad.id);
+                        selectCiudad.add(option);
+                    });
+                });
+        } else {
+            // Si el país queda vacío, bloqueamos todo
+            selectCiudad.innerHTML = '<option value="">---------</option>';
+            selectCiudad.disabled = true;
+            btnNuevoCiudad.disabled = true;
+        }
+    });
 });
 </script>
 
