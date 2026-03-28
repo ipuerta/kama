@@ -1,0 +1,91 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+
+<div class="col-lg-3">
+    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        {% csrf_token %}
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ grupo.nombre }}</li>
+            <li class="list-group-item">{{ form.nombre_coreano.label_tag }} {{ grupo.nombre_coreano|default:"-" }}</li>
+            <li class="list-group-item">{{ form.padre.label_tag }}
+                <a class="link-underline link-underline-opacity-0" style="color:black;" {% if grupo.padre %}href="{% url 'info_grupo' grupo.padre.id %}"{% endif %}>
+                    {{ grupo.padre|default:"-" }}
+                    {% if grupo.padre %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                    </svg>
+                    {% endif %}
+                </a>
+            </li>
+            <li class="list-group-item">{{ form.nombre_fandom.label_tag }} {{ grupo.nombre_fandom }}</li>
+            <li class="list-group-item">{{ form.fecha_debut.label_tag }} {{ grupo.fecha_debut|date:"d-m-Y" }}</li>
+            <li class="list-group-item">{{ form.pais.label_tag }} {{ grupo.pais }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ grupo.enlace }} </li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
+        </ul>
+        <ul class="list-group" id="formulario" style="display:none;">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ form.nombre }} {{ form.nombre.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_coreano.label_tag }} {{ form.nombre_coreano }} {{ form.nombre_coreano.errors }}</li>
+            <li class="list-group-item">{{ form.padre.label_tag }} {{ form.padre }} {{ form.padre.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_fandom.label_tag }} {{ form.nombre_fandom }} {{ form.nombre_fandom.errors }}</li>
+            <li class="list-group-item">{{ form.fecha_debut.label_tag }} {{ form.fecha_debut }} {{ form.fecha_debut.errors }}</li>
+            <li class="list-group-item">{{ form.pais.label_tag }} {{ form.pais }} {{ form.pais.errors }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ form.enlace }} {{ form.enlace.errors }}</li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center"><button type="submit" class="btn">Guardar</button></li>
+        </ul>
+    </form>
+
+    </div>
+
+    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+        {% if hijos %}
+        <ul class="list-group" id="hijos">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Subgrupos</li>
+            {% for hijo in hijos %}
+                <li class="list-group-item text-center">
+                    <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_grupo' hijo.id %}">
+                        {{ hijo.nombre }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                        </svg>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+        <ul class="list-group" id="Artistas">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Miembros</li>
+            {% if relaciones %}
+            {% for relacion in relaciones %}
+                <li class="list-group-item text-center">
+                    <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_artista' relacion.artista.id %}">
+                        {{ relacion.artista.nombre }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                        </svg>
+                    </a>
+                </li>
+            {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<script>
+function activarEdicion() {
+    document.getElementById("detalle").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+}
+</script>
+{% endblock %}

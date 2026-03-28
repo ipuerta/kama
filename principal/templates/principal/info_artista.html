@@ -1,0 +1,94 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+
+<div class="col-lg-3">
+    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="formulario" value="modArtista">
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ artista.nombre }}</li>
+            {% if artista.nombre_coreano %}<li class="list-group-item">{{ form.nombre_coreano.label_tag }} {{ artista.nombre_coreano|default:"-" }}</li>{% endif %}
+            {% if artista.nombre_japones %}<li class="list-group-item">{{ form.nombre_japones.label_tag }} {{ artista.nombre_japones|default:"-" }}</li>{% endif %}
+            {% if artista.nombre_chino %}<li class="list-group-item">{{ form.nombre_chino.label_tag }} {{ artista.nombre_chino|default:"-" }}</li>{% endif %}
+            {% if artista.nombre_tailandes %}<li class="list-group-item">{{ form.nombre_tailandes.label_tag }} {{ artista.nombre_tailandes|default:"-" }}</li>{% endif %}
+            <li class="list-group-item">{{ form.fecha_nacimiento.label_tag }} {{ artista.fecha_nacimiento|date:"d-m-Y" }}</li>
+            <li class="list-group-item">{{ form.pais.label_tag }} {{ artista.pais }}</li>
+            <li class="list-group-item">{{ form.ciudad.label_tag }} {{ artista.ciudad }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ artista.enlace }} </li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
+        </ul>
+        <ul class="list-group" id="formulario" style="display:none;">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ form.nombre }} {{ form.nombre.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_coreano.label_tag }} {{ form.nombre_coreano }} {{ form.nombre_coreano.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_japones.label_tag }} {{ form.nombre_japones }} {{ form.nombre_japones.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_chino.label_tag }} {{ form.nombre_chino }} {{ form.nombre_chino.errors }}</li>
+            <li class="list-group-item">{{ form.nombre_tailandes.label_tag }} {{ form.nombre_tailandes }} {{ form.nombre_tailandes.errors }}</li>
+            <li class="list-group-item">{{ form.fecha_nacimiento.label_tag }} {{ form.fecha_nacimiento }} {{ form.fecha_nacimiento.errors }}</li>
+            <li class="list-group-item">{{ form.pais.label_tag }} {{ form.pais }} {{ form.pais.errors }}</li>
+            <li class="list-group-item">{{ form.ciudad.label_tag }} {{ form.ciudad }} {{ form.ciudad.errors }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ form.enlace }} {{ form.enlace.errors }}</li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center"><button type="submit" class="btn">Guardar</button></li>
+        </ul>
+    </form>
+
+    </div>
+
+    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+        <ul class="list-group" id="grupos">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Grupos</li>
+            {% if relaciones %}
+            {% for relacion in relaciones %}
+                <li class="list-group-item text-center">
+                    <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_grupo' relacion.grupo.id %}">
+                        {{ relacion.grupo.nombre }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                        </svg>
+                    </a>
+                </li>
+            {% endfor %}
+            {% endif %}
+            <li class="list-group-item bg-primary bg-opacity-25 text-center"><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#altaRelacion">Añadir</button></li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="altaRelacion" tabindex="-1" aria-labelledby="altaRelacionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="altaRelacionLabel">Añadir Grupo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+            <input type="hidden" name="formulario" value="altaRelacion">
+          {{ form2.artista }} {{ form2.artista.errors }}
+          {{ form2.grupo.label_tag }} {{ form2.grupo }} {{ form2.grupo.errors }}
+          {{ form2.fecha_desde.label_tag }} {{ form2.fecha_desde }} {{ form2.fecha_desde.errors }}
+          {{ form2.fecha_hasta.label_tag }} {{ form2.fecha_hasta }} {{ form2.fecha_hasta.errors }}
+          <button type="submit" class="btn btn-success mt-3">Guardar</button>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<script>
+function activarEdicion() {
+    document.getElementById("detalle").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+}
+</script>
+{% endblock %}

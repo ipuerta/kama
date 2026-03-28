@@ -1,16 +1,6 @@
 from django.db import models
 
-class Genero(models.Model):
-    nombre = models.CharField(max_length=50)
-
-    class Meta:
-        verbose_name = "Género"        
-        verbose_name_plural = "Géneros" 
-
-    def __str__(self):
-        return self.nombre
-
-class Pais(models.Model):
+class Paises(models.Model):
     nombre = models.CharField(max_length=50)
 
     class Meta:
@@ -20,9 +10,9 @@ class Pais(models.Model):
     def __str__(self):
         return self.nombre
 
-class Ciudad(models.Model):
+class Ciudades(models.Model):
     nombre = models.CharField(max_length=100)
-    pais = models.ForeignKey(Pais, on_delete=models.CASCADE)
+    pais = models.ForeignKey(Paises, on_delete=models.CASCADE)
     
     class Meta:
         verbose_name = "Ciudad"        
@@ -32,8 +22,9 @@ class Ciudad(models.Model):
         return self.nombre
 
 class Compañias(models.Model):
-    id_compañia = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
+    padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    pais = models.ForeignKey(Paises, on_delete=models.CASCADE)
     
     class Meta:
         verbose_name = "Compañía"        
@@ -42,15 +33,17 @@ class Compañias(models.Model):
     def __str__(self):
         return self.nombre
 
-class Artista(models.Model):
-    id_artista = models.AutoField(primary_key=True)
+
+class Artistas(models.Model):
     nombre = models.CharField(max_length=100)
-    nombre_nacimiento = models.CharField(max_length=100)
+    nombre_coreano = models.CharField(max_length=100, null=True, blank=True)
+    nombre_japones = models.CharField(max_length=100, null=True, blank=True)
+    nombre_chino = models.CharField(max_length=100, null=True, blank=True)
+    nombre_tailandes = models.CharField(max_length=100, null=True, blank=True)
     fecha_nacimiento = models.DateField()
-    pais = models.ForeignKey(Pais, on_delete=models.CASCADE)
-    ciudad = models.ForeignKey(Ciudad, on_delete=models.CASCADE)
-    compañia = models.ForeignKey(Compañias, on_delete=models.CASCADE, null=True, blank=True)
-    mega = models.CharField(max_length=100)
+    pais = models.ForeignKey(Paises, on_delete=models.CASCADE)
+    ciudad = models.ForeignKey(Ciudades, on_delete=models.CASCADE)
+    enlace = models.CharField(max_length=100)
     
     class Meta:
         verbose_name = "Artista"        
@@ -59,48 +52,40 @@ class Artista(models.Model):
     def __str__(self):
         return self.nombre
 
-class Artista_Nombres(models.Model):
-    id_relacion = models.AutoField(primary_key=True)
-    artista = models.ForeignKey(Artista, on_delete=models.CASCADE)
+class Artistas_Nombres(models.Model):
+    artista = models.ForeignKey(Artistas, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField(null=True, blank=True)
     
     class Meta:
-        verbose_name = "Artista_Nombres"        
-        verbose_name_plural = "Artista_Nombres" 
+        verbose_name = "Artista_Nombre"        
+        verbose_name_plural = "Artistas_Nombres" 
     
     def __str__(self):
         return self.nombre
 
-class Artista_Compañias(models.Model):
-    id_relacion = models.AutoField(primary_key=True)
-    artista = models.ForeignKey(Artista, on_delete=models.CASCADE)
+class Artistas_Compañias(models.Model):
+    artista = models.ForeignKey(Artistas, on_delete=models.CASCADE)
     compañia = models.ForeignKey(Compañias, on_delete=models.CASCADE)
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField(null=True, blank=True)
     
     class Meta:
-        verbose_name = "Artista_Compañias"        
-        verbose_name_plural = "Artista_Compañias" 
+        verbose_name = "Artista_Compañia"        
+        verbose_name_plural = "Artistas_Compañias" 
     
     def __str__(self):
         return self.artista
 
 class Grupos(models.Model):
-    TIPO_CHOICES = [
-        ('GG', 'Girl Group'),
-        ('BAND', 'Bandas'),
-    ]
-
-    id_grupo = models.AutoField(primary_key=True)
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
     nombre = models.CharField(max_length=100)
+    nombre_coreano = models.CharField(max_length=100, null=True, blank=True)
+    padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='hijos')
     nombre_fandom = models.CharField(max_length=100, null=True, blank=True)
     fecha_debut = models.DateField()
-    pais = models.ForeignKey(Pais, on_delete=models.CASCADE)
-    compañia = models.ForeignKey(Compañias, on_delete=models.CASCADE)
-    mega = models.CharField(max_length=100)
+    pais = models.ForeignKey(Paises, on_delete=models.CASCADE)
+    enlace = models.CharField(max_length=100)
     
     class Meta:
         verbose_name = "Grupo"        
@@ -110,52 +95,49 @@ class Grupos(models.Model):
         return self.nombre
 
 class Grupos_Nombres(models.Model):
-    id_relacion = models.AutoField(primary_key=True)
     grupo = models.ForeignKey(Grupos, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField(null=True, blank=True)
     
     class Meta:
-        verbose_name = "Grupos_Nombres"        
+        verbose_name = "Grupo_Nombre"        
         verbose_name_plural = "Grupos_Nombres" 
     
     def __str__(self):
         return self.nombre
 
 class Grupos_Compañias(models.Model):
-    id_relacion = models.AutoField(primary_key=True)
     grupo = models.ForeignKey(Grupos, on_delete=models.CASCADE)
     compañia = models.ForeignKey(Compañias, on_delete=models.CASCADE)
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField(null=True, blank=True)
     
     class Meta:
-        verbose_name = "Grupos_Compañias"        
+        verbose_name = "Grupo_Compañia"        
         verbose_name_plural = "Grupos_Compañias" 
     
     def __str__(self):
         return self.grupo
 
-class Artista_Grupos(models.Model):
-    id_relacion = models.AutoField(primary_key=True)
-    artista = models.ForeignKey(Artista, on_delete=models.CASCADE)
+class Artistas_Grupos(models.Model):
+    artista = models.ForeignKey(Artistas, on_delete=models.CASCADE)
     grupo = models.ForeignKey(Grupos, on_delete=models.CASCADE)
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField(null=True, blank=True)
     
     class Meta:
-        verbose_name = "Artista_Grupos"        
-        verbose_name_plural = "Artista_Grupos" 
+        verbose_name = "Artista_Grupo"        
+        verbose_name_plural = "Artistas_Grupos" 
     
     def __str__(self):
-        return self.artista
+        return self.artista.nombre
 
 class Secciones(models.Model):
-    id_seccion = models.AutoField(primary_key=True)
-    id_seccion_padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    nombre = models.CharField(max_length=100)
+    padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     orden = models.IntegerField()
-    titulo = models.CharField(max_length=100)
+    seleccionable = models.CharField(max_length=1)
     
     class Meta:
         verbose_name = "Sección"        
@@ -165,9 +147,8 @@ class Secciones(models.Model):
         return self.titulo
 
 class Videos(models.Model):
-    id_video = models.AutoField(primary_key=True)
-    titulo = models.CharField(max_length=100)
-    youtube = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100)
+    enlace = models.CharField(max_length=100)
     fecha = models.DateField()
     seccion = models.ForeignKey(Secciones, on_delete=models.CASCADE)
     
@@ -183,29 +164,13 @@ class Videos_Grupos(models.Model):
     grupo = models.ForeignKey(Grupos, on_delete=models.CASCADE)
     
     class Meta:
-        verbose_name = "Videos_Grupos"        
+        verbose_name = "Video_Grupo"        
         verbose_name_plural = "Videos_Grupos" 
 
 class Videos_Artistas(models.Model):
     video = models.ForeignKey(Videos, on_delete=models.CASCADE)
-    artista = models.ForeignKey(Artista, on_delete=models.CASCADE)
+    artista = models.ForeignKey(Artistas, on_delete=models.CASCADE)
     
     class Meta:
-        verbose_name = "Videos_Artistas"        
+        verbose_name = "Video_Artista"        
         verbose_name_plural = "Videos_Artistas" 
-
-class Artistas_Generos(models.Model):
-    artista = models.ForeignKey(Artista, on_delete=models.CASCADE, null=True, blank=True)
-    genero = models.ForeignKey(Genero, on_delete=models.CASCADE, null=True, blank=True)
-    
-    class Meta:
-        verbose_name = "Artistas_Generos"        
-        verbose_name_plural = "Artistas_Generos" 
-
-class Grupos_Generos(models.Model):
-    grupo = models.ForeignKey(Grupos, on_delete=models.CASCADE, null=True, blank=True)
-    genero = models.ForeignKey(Genero, on_delete=models.CASCADE, null=True, blank=True)
-    
-    class Meta:
-        verbose_name = "Grupos_Generos"        
-        verbose_name_plural = "Grupos_Generos" 

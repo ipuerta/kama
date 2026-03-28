@@ -1,0 +1,14 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+<div class="row g-4">
+
+    {% for grupo in grupos %}
+    <div class="col-6 col-md-3">
+        <div class="card h-100 border-0 shadow-sm hub-card bg-primary bg-opacity-25 text-center fw-bold">
+            <a href="{% url 'info_grupo' grupo.id %}" class="text-decoration-none text-dark">{{ grupo.nombre }}</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
