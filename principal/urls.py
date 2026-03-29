@@ -26,18 +26,12 @@ urlpatterns = [
     path('artistas/<int:id>', views.info_artista, name='info_artista'),
     
     path('paises/<int:id>', views.info_pais, name='info_pais'),
-    path('alta_pais', views.alta_pais, name='alta_pais'),
-#    path('premios/', views.premios, name='premios'),
-#    path('wiki/', views.wiki, name='wiki'),
-#    path('videos/', views.videos, name='videos'),
-#    path('videos/nuevo-girl-group/', views.alta_girl_group, name='alta_girl_group'),
-#    path('videos/nuevo-banda/', views.alta_banda, name='alta_banda'),
-#    path('videos/nuevo-artista/', views.alta_artista, name='alta_artista'),
-#    path('ajax/crear-pais/', views.ajax_crear_pais, name='ajax_crear_pais'),
-#    path('ajax/cargar-ciudades/', views.ajax_cargar_ciudades, name='ajax_cargar_ciudades'),
-#    path('ajax/crear-ciudad/', views.ajax_crear_ciudad, name='ajax_crear_ciudad'),
-#    path('ajax/crear-compañia/', views.ajax_crear_compañia, name='ajax_crear_compañia'),
-#    path('grupo/<int:id_grupo>/', views.detalle_grupo, name='detalle_grupo'),
+    path('alta_pais/', views.alta_pais, name='alta_pais'),
+    path('alta_comp/', views.alta_compañia, name='alta_comp'),
+    path('comps/', views.compañias, name='comps'),
+    path('info_comp/<int:id>', views.info_compañia, name='info_comp'),
+    path('alta_video/', views.alta_video, name='alta_video'),
+    path('info_video/<int:id>', views.info_video, name='info_video'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

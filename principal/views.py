@@ -2,9 +2,47 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models.functions import Lower
 from datetime import datetime
-from .models import Paises, Ciudades, Grupos, Artistas, Artistas_Grupos
-from .forms import AltaGrupoForm, ModGrupoForm, AltaArtistaForm, ModArtistaForm, AltaRelacion, AltaCiudad, AltaPais
+from .models import Paises, Ciudades, Grupos, Artistas, Artistas_Grupos, Compañias, Grupos_Compañias, Artistas_Compañias, Secciones, Videos, Videos_Grupos, Videos_Artistas
+from .forms import AltaGrupoForm, ModGrupoForm, AltaArtistaForm, ModArtistaForm, AltaRelacion, AltaCiudad, AltaPais, AltaCompañia, ModCompañiaForm, AltaGrupoCompañia, AltaArtistaCompañia
+from .forms import AltaVideo, AltaVideoGrupo, AltaVideoArtista
 from django.views.decorators.csrf import csrf_protect
+
+
+def obtenerArbolSecciones(seccionesFiltrar):
+    # Obtener todos los ids
+    idsSecciones = []
+
+    def obtenerIdPadres (idHijo):
+        seccionPadre = Secciones.objects.get(id=idHijo).padre
+        if seccionPadre:
+            if seccionPadre.id not in idsSecciones:
+                idsSecciones.append(seccionPadre.id)
+                obtenerIdPadres (seccionPadre.id)
+
+    for s in seccionesFiltrar:
+        if s.id not in idsSecciones:
+            idsSecciones.append(s.id)
+            obtenerIdPadres (s.id)
+
+    # Obtener todas las secciones
+    seccionesPadres = Secciones.objects.filter(id__in=idsSecciones, padre__isnull=True)
+
+    # Ordenar las secciones y añadir el nivel
+    arbolSecciones = []
+
+    def ordenar(nodos, idPadre=0, nivel=0):
+        for nodo in nodos:
+            if nivel == 0:
+                idPadre = nodo.id
+
+            arbolSecciones.append((nodo.id, nodo.nombre, nodo.seleccionable, nivel, idPadre))
+
+            hijos = nodo.hijos.filter(id__in=idsSecciones).order_by('orden')
+            ordenar(hijos, idPadre, nivel + 1)
+
+    ordenar(seccionesPadres)
+
+    return arbolSecciones
 
 def inicio(request):
     paises = Paises.objects.all().order_by(Lower('nombre'))
@@ -53,32 +91,59 @@ def alta_grupo(request):
 def info_grupo(request, id):
     grupo = get_object_or_404(Grupos, id=id)
     hijos = grupo.hijos.all()
-    relaciones = Artistas_Grupos.objects.filter(grupo=id)
 
     if request.method == 'POST':
-        form = ModGrupoForm(request.POST, instance=grupo)
-        if form.is_valid():
-            form.save()
-        else:
-            print(form.errors)
+        if request.POST.get("formulario") == "modGrupo":
+            form = ModGrupoForm(request.POST, instance=grupo)
+            if form.is_valid():
+                form.save()
+            else:
+                print(form.errors)
+
+        if request.POST.get("formulario") == "altaGrupoCompañia":
+            form2 = AltaGrupoCompañia(request.POST)
+            if form2.is_valid():
+                form2.save()
+            else:
+                print(form2.errors)
+
+        if request.POST.get("formulario") == "modGrupoCompañia":
+            grupoCompañia = get_object_or_404(Grupos_Compañias, id=request.POST.get("id_relacion"))
+            form2 = AltaGrupoCompañia(request.POST, instance=grupoCompañia)
+            if form2.is_valid():
+                form2.save()
+            else:
+                print(form2.errors)
 
     paises = Paises.objects.all().order_by(Lower('nombre'))
     grupo = get_object_or_404(Grupos, id=id)
+    relaciones = Artistas_Grupos.objects.filter(grupo=id).order_by(Lower('artista__nombre'),'artista__fecha_nacimiento')
+    compañias = Grupos_Compañias.objects.filter(grupo=id).order_by(Lower('compañia__nombre'))
     form = ModGrupoForm(instance=grupo)
+    form2 = AltaGrupoCompañia(initial={'grupo' : grupo})
+
+    videos = Videos.objects.filter(videos_grupos__grupo=grupo).order_by('fecha','nombre')
+    secciones = Secciones.objects.filter(videos__videos_grupos__grupo=grupo).distinct()
+
+    arbolSecciones = obtenerArbolSecciones(secciones)
 
     contexto = {
         'paises': paises,
         'grupo': grupo,
         'hijos': hijos,
         'relaciones': relaciones,
-        'form': form
+        'compañias': compañias,
+        'videos': videos,
+        'arbolSecciones': arbolSecciones,
+        'form': form,
+        'form2': form2
     }
      
     return render(request, 'principal/info_grupo.html', contexto)
 
 def artistas(request):
     paises = Paises.objects.all().order_by(Lower('nombre'))
-    artistas = Artistas.objects.all().order_by(Lower('nombre'))
+    artistas = Artistas.objects.all().order_by(Lower('nombre'),'fecha_nacimiento')
 
     contexto = {
         'paises': paises,
@@ -109,7 +174,6 @@ def alta_artista(request):
 
 def info_artista(request, id):
     artista = get_object_or_404(Artistas, id=id)
-    relaciones = Artistas_Grupos.objects.filter(artista=id)
 
     if request.method == 'POST':
 
@@ -127,18 +191,52 @@ def info_artista(request, id):
             else:
                 print(form2.errors)
 
+        if request.POST.get("formulario") == "modRelacion":
+            artistaGrupo = get_object_or_404(Artistas_Grupos, id=request.POST.get("id_relacion"))
+            form2 = AltaRelacion(request.POST, instance=artistaGrupo)
+            if form2.is_valid():
+                form2.save()
+            else:
+                print(form2.errors)
+
+        if request.POST.get("formulario") == "altaArtistaCompañia":
+            form3 = AltaArtistaCompañia(request.POST)
+            if form3.is_valid():
+                form3.save()
+            else:
+                print(form3.errors)
+
+        if request.POST.get("formulario") == "modArtistaCompañia":
+            artistaCompañia = get_object_or_404(Artistas_Compañias, id=request.POST.get("id_relacion"))
+            form3 = AltaArtistaCompañia(request.POST, instance=artistaCompañia)
+            if form3.is_valid():
+                form3.save()
+            else:
+                print(form2.errors)
+
     paises = Paises.objects.all().order_by(Lower('nombre'))
     artista = get_object_or_404(Artistas, id=id)
-    relaciones = Artistas_Grupos.objects.filter(artista=id)
+    relaciones = Artistas_Grupos.objects.filter(artista=id).order_by(Lower('grupo__nombre'))
+    compañias = Artistas_Compañias.objects.filter(artista=id).order_by(Lower('compañia__nombre'))
     form = ModArtistaForm(instance=artista)
     form2 = AltaRelacion(initial={'artista' : artista})
+    form3 = AltaArtistaCompañia(initial={'artista' : artista})
+
+    videos = Videos.objects.filter(videos_artistas__artista=artista).order_by('fecha','nombre')
+    secciones = Secciones.objects.filter(videos__videos_artistas__artista=artista).distinct()
+
+    arbolSecciones = obtenerArbolSecciones(secciones)
 
     contexto = {
         'paises': paises,
         'artista': artista,
         'relaciones': relaciones,
+        'compañias': compañias,
+        'videos': videos,
+        'arbolSecciones': arbolSecciones,
         'form': form,
-        'form2': form2
+        'form2': form2,
+        'form3': form3
     }
      
     return render(request, 'principal/info_artista.html', contexto)
@@ -148,6 +246,8 @@ def info_pais(request, id):
     pais = get_object_or_404(Paises, id=id)
     ciudades = Ciudades.objects.filter(pais=id).order_by(Lower('nombre'))
     grupos = Grupos.objects.filter(pais=id).order_by(Lower('nombre'))
+    artistas = Artistas.objects.filter(pais=id).order_by(Lower('nombre'),'fecha_nacimiento')
+    compañias = Compañias.objects.filter(pais=id).order_by(Lower('nombre'))
 
     if request.method == 'POST':
         if request.POST.get("formulario") == "altaCiudad":
@@ -164,6 +264,8 @@ def info_pais(request, id):
         'pais': pais,
         'ciudades': ciudades,
         'grupos': grupos,
+        'artistas': artistas,
+        'compañias': compañias,
         'form': form
     }
      
@@ -189,204 +291,154 @@ def alta_pais(request):
      
     return render(request, 'principal/alta_pais.html', contexto)
 
-
-#def videos(request):
-#    girl_groups = Grupos.objects.none()
-#    bandas = Grupos.objects.none()
-#    solistas = Artista.objects.none()
-
-#    # Obtener parámetros del formulario
-#    es_peticion_busqueda = 'q' in request.GET or 'generos' in request.GET or 'totales' in request.GET
-#    query = request.GET.get('q', '')
-#    generos_seleccionados = request.GET.get('generos', '').split(',')
-#    totales_seleccionados = request.GET.get('totales', '').split(',')
-
-#    # Limpiar listas vacías
-#    generos_seleccionados = [g for g in generos_seleccionados if g]
-#    totales_seleccionados = [t for t in totales_seleccionados if t]
-
-#    # --- LÓGICA PARA GRUPOS (Girl Groups y Bandas) ---
-#    # Si no hay filtros de "Total" o si se seleccionó GG o BAND
-#    if not totales_seleccionados or 'GG' in totales_seleccionados or 'BAND' in totales_seleccionados:
-#        grupos_base = Grupos.objects.all()
-        
-#        if query:
-#            grupos_base = grupos_base.filter(nombre__icontains=query)
-        
-#        if generos_seleccionados:
-#            # Filtramos grupos que tengan relación con los géneros seleccionados en la tabla intermedia
-#            grupos_base = grupos_base.filter(grupos_generos__genero__nombre__in=generos_seleccionados).distinct()
-
-#        # Separamos por tipo y ordenamos
-#        if not totales_seleccionados or 'GG' in totales_seleccionados:
-#            girl_groups = grupos_base.filter(tipo='GG').order_by(Lower('nombre'))
-        
-#        if not totales_seleccionados or 'BAND' in totales_seleccionados:
-#            bandas = grupos_base.filter(tipo='BAND').order_by(Lower('nombre'))
-
-#    # --- LÓGICA PARA ARTISTAS (Solistas) ---
-#    if not totales_seleccionados or 'SOLO' in totales_seleccionados: # Asumiendo 'SOLO' para Artistas
-#        artistas_base = Artista.objects.all()
-
-#        if query:
-#            artistas_base = artistas_base.filter(nombre__icontains=query)
-        
-#        if generos_seleccionados:
-#            artistas_base = artistas_base.filter(artistas_generos__genero__nombre__in=generos_seleccionados).distinct()
-        
-#        solistas = artistas_base.order_by(Lower('nombre'))
-
+def alta_compañia(request):
+    paises = Paises.objects.all().order_by(Lower('nombre'))
+    contexto = {
+        'paises': paises,
+    }
     
-#    generos_estaticos = [
-#        {'id': 'K-POP', 'nombre': 'K-POP'},
-#        {'id': 'K-ROCK', 'nombre': 'K-ROCK'},
-#        {'id': 'J-POP', 'nombre': 'J-POP'},
-#        {'id': 'J-ROCK', 'nombre': 'J-ROCK'},
-#    ]
-#    totales_estaticos = [
-#        {'id': 'GG', 'nombre': 'Girl Groups'},
-#        {'id': 'BAND', 'nombre': 'Bandas'},
-#        {'id': 'SOLO', 'nombre': 'Artistas/Solistas'},
-#    ]
-#    contexto = {
-#        'busqueda_realizada': es_peticion_busqueda,
-#        'generos': generos_estaticos,
-#        'totales': totales_estaticos,
-#        'girl_groups': girl_groups,
-#        'bandas': bandas,
-#        'solistas': solistas,
-#        'generos_seleccionados': generos_seleccionados,
-#        'totales_seleccionados': totales_seleccionados,
-#        'query': query,
-#    }
+    if request.method == 'POST':
+        form = AltaCompañia(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'principal/inicio.html', contexto)
+    else:
+        form = AltaCompañia()
+        contexto = {
+            'paises': paises,
+            'form': form
+        }
+     
+    return render(request, 'principal/alta_comp.html', contexto)
 
-#    return render(request, 'principal/videos.html', contexto)
+def compañias(request):
+    paises = Paises.objects.all().order_by(Lower('nombre'))
+    compañias = Compañias.objects.all().order_by(Lower('nombre'))
 
-#def alta_girl_group(request):
-#    if request.method == 'POST':
-#        form = GirlGroupForm(request.POST)
-#        if form.is_valid():
-#            # Forzamos el tipo GG antes de guardar por seguridad
-#            grupo = form.save(commit=False)
-#            grupo.tipo = 'GG'
-#            grupo.save()
+    contexto = {
+        'paises': paises,
+        'compañias': compañias
+    }
 
-#            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
-#            if next_url:
-#                return redirect(next_url)
-#            return redirect('videos') # Redirigir a la lista tras guardar
-#            # return render(request, 'principal/videos.html')
-#    else:
-#        # Iniciamos el formulario con el valor por defecto
-#        form = GirlGroupForm(initial={'tipo': 'GG'})
+    return render(request, 'principal/listado_comps.html', contexto)
 
-#    next_url = request.GET.get('next', '')
-#    return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
+def info_compañia(request, id):
+    compañia = get_object_or_404(Compañias, id=id)
 
-#def alta_banda(request):
-#    if request.method == 'POST':
-#        form = BandaForm(request.POST)
-#        if form.is_valid():
-#            # Forzamos el tipo BAND antes de guardar por seguridad
-#            grupo = form.save(commit=False)
-#            grupo.tipo = 'BAND'
-#            grupo.save()
+    if request.method == 'POST':
 
-#            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
-#            if next_url:
-#                return redirect(next_url)
-#            return redirect('videos') # Redirigir a la lista tras guardar
-#            # return render(request, 'principal/videos.html')
-#    else:
-#        # Iniciamos el formulario con el valor por defecto
-#        form = GirlGroupForm(initial={'tipo': 'BAND'})
+        if request.POST.get("formulario") == "modCompañia":
+            form = ModCompañiaForm(request.POST, instance=compañia)
+            if form.is_valid():
+                form.save()
+            else:
+                print(form.errors)
 
-#    next_url = request.GET.get('next', '')
-#    return render(request, 'principal/alta_girl_group.html', {'form': form, 'next_url': next_url})
+    paises = Paises.objects.all().order_by(Lower('nombre'))
+    compañia = get_object_or_404(Compañias, id=id)
+    grupos = Grupos_Compañias.objects.filter(compañia=id).order_by(Lower('grupo__nombre'))
+    artistas = Artistas_Compañias.objects.filter(compañia=id).order_by(Lower('artista__nombre'),'artista__fecha_nacimiento')
+    form = ModCompañiaForm(instance=compañia)
 
-#def alta_artista(request):
-#    if request.method == 'POST':
-#        form = ArtistaForm(request.POST)
-#        if form.is_valid():
-#            grupo = form.save(commit=False)
-#            grupo.save()
+    contexto = {
+        'paises': paises,
+        'compañia': compañia,
+        'grupos': grupos,
+        'artistas': artistas,
+        'form': form
+    }
+     
+    return render(request, 'principal/info_comp.html', contexto)
 
-#            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
-#            if next_url:
-#                return redirect(next_url)
-#            return redirect('videos') # Redirigir a la lista tras guardar
-#            # return render(request, 'principal/videos.html')
-#    else:
-#        # Iniciamos el formulario con el valor por defecto
-#        form = ArtistaForm()
 
-#    next_url = request.GET.get('next', '')
-#    return render(request, 'principal/alta_artista.html', {'form': form, 'next_url': next_url})
-
-#@csrf_protect
-#def ajax_crear_pais(request):
-#    if request.method == "POST":
-#        nombre = request.POST.get('nombre', '').strip()
-#        if nombre:
-#            try:
-#                # get_or_create devuelve una tupla: (objeto, creado_si_o_no)
-#                pais, created = Pais.objects.get_or_create(nombre=nombre)
-#                return JsonResponse({
-#                    'id': pais.id,
-#                    'nombre': pais.nombre
-#                }, status=200)
-#            except Exception as e:
-#                return JsonResponse({'error': str(e)}, status=500)
+def alta_video(request):
+    paises = Paises.objects.all().order_by(Lower('nombre'))
     
-#    return JsonResponse({'error': 'Nombre no proporcionado'}, status=400)
+    if request.method == 'POST':
+        form = AltaVideo(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = AltaVideo()
 
-## views.py
-#def ajax_cargar_ciudades(request):
-#    pais_id = request.GET.get('pais_id')
-#    ciudades = Ciudad.objects.filter(pais_id=pais_id).order_by('nombre')
-    
-#    # Creamos una lista de diccionarios para enviar como JSON
-#    lista_ciudades = [{'id': c.id, 'nombre': c.nombre} for c in ciudades]
-#    return JsonResponse(lista_ciudades, safe=False)
+    secciones = obtenerArbolSecciones(Secciones.objects.all())
+    form = AltaVideo()
 
-#def ajax_crear_ciudad(request):
-#    if request.method == "POST":
-#        nombre = request.POST.get('nombre')
-#        pais_id = request.POST.get('pais_id') # Recibiremos el ID, es más seguro
-        
-#        if nombre and pais_id:
-#            try:
-#                # Buscamos el objeto Pais por su ID
-#                pais_obj = Pais.objects.get(id=pais_id)
-#                ciudad = Ciudad.objects.create(nombre=nombre, pais=pais_obj)
-#                return JsonResponse({'id': ciudad.id, 'nombre': ciudad.nombre}, status=200)
-#            except Exception as e:
-#                return JsonResponse({'error': str(e)}, status=500)
-                
-#    return JsonResponse({'error': 'Faltan datos'}, status=400)
+    contexto = {
+        'paises': paises,
+        'secciones': secciones,
+        'form': form
+    }
+     
+    return render(request, 'principal/alta_video.html', contexto)
 
-#@csrf_protect
-#def ajax_crear_compañia(request):
-#    if request.method == "POST":
-#        nombre = request.POST.get('nombre', '').strip()
 
-#        if nombre:
-#            try:
-#                # get_or_create devuelve una tupla: (objeto, creado_si_o_no)
-#                compañia, created = Compañias.objects.get_or_create(nombre=nombre)
-#                return JsonResponse({
-#                    'id': compañia.id_compañia,
-#                    'nombre': compañia.nombre
-#                }, status=200)
-#            except Exception as e:
-#                return JsonResponse({'error': str(e)}, status=500)
-    
-#    return JsonResponse({'error': 'Nombre no proporcionado'}, status=400)
+def info_video(request, id):
+    video = get_object_or_404(Videos, id=id)
 
-#def detalle_grupo(request, id_grupo):
-#    # Buscar el grupo
-#    grupo = get_object_or_404(Grupos, id_grupo=id_grupo)
+    if request.method == 'POST':
 
-#    return render(request, 'principal/detalle_grupo.html', {
-#        'grupo': grupo
-#        })
+        if request.POST.get("formulario") == "modCompañia":
+            form = AltaVideo(request.POST, instance=video)
+            if form.is_valid():
+                form.save()
+            else:
+                print(form.errors)
+
+        if request.POST.get("formulario") == "altaVideoGrupo":
+            form2 = AltaVideoGrupo(request.POST)
+            if form2.is_valid():
+                form2.save()
+            else:
+                print(form2.errors)
+
+        if request.POST.get("formulario") == "borraVideoGrupo":
+            idBorrar = request.POST.get("id_relacion")
+
+            if idBorrar:
+                Videos_Grupos.objects.filter(id=idBorrar).delete()
+            else:
+                print("Error al borrar")
+
+        if request.POST.get("formulario") == "altaVideoArtista":
+            form3 = AltaVideoArtista(request.POST)
+            if form3.is_valid():
+                form3.save()
+            else:
+                print(form3.errors)
+
+        if request.POST.get("formulario") == "borraVideoArtista":
+            idBorrar = request.POST.get("id_relacion")
+
+            if idBorrar:
+                Videos_Artistas.objects.filter(id=idBorrar).delete()
+            else:
+                print("Error al borrar")
+
+    paises = Paises.objects.all().order_by(Lower('nombre'))
+    video = get_object_or_404(Videos, id=id)
+    seccionesFiltradas = obtenerArbolSecciones(Secciones.objects.filter(id=video.seccion.id))
+    secciones = obtenerArbolSecciones(Secciones.objects.all())
+    grupos = Grupos.objects.all()
+    gruposFiltrados = Videos_Grupos.objects.filter(video=video)
+    artistas = Artistas.objects.all()
+    artistasFiltrados = Videos_Artistas.objects.filter(video=video)
+    form = AltaVideo(instance=video)
+    form2 = AltaVideoGrupo(initial={'video' : video})
+    form3 = AltaVideoArtista(initial={'video' : video})
+
+    contexto = {
+        'paises': paises,
+        'video': video,
+        'seccionesFiltradas': seccionesFiltradas,
+        'secciones': secciones,
+        'grupos': grupos,
+        'gruposFiltrados': gruposFiltrados,
+        'artistas': artistas,
+        'artistasFiltrados': artistasFiltrados,
+        'form': form,
+        'form2': form2,
+        'form3': form3
+    }
+     
+    return render(request, 'principal/info_video.html', contexto)

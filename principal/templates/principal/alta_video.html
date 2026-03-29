@@ -1,0 +1,182 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+<form method="POST">
+{% csrf_token %}
+
+Título: {{ form.nombre }} {{ form.nombre.errors }}
+{{ form.enlace.label_tag }} {{ form.enlace }} {{ form.enlace.errors }}
+{{ form.fecha.label_tag }} {{ form.fecha }} {{ form.fecha.errors }}
+{{ form.seccion }} {{ form.seccion.errors }}
+
+Secciones:
+{% if secciones %}
+    <select name="seccion0" class="form-select" required="" id="seccion0" onchange="mostrarSelects(this)">
+        <option value="" selected="">---------</option>
+{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+{% if nivel == 0 %}
+        <option value="{{id_seccion}}">{{ nombre_seccion }}</option>
+{% endif %}
+{% endfor %}
+    </select>
+
+    <select name="seccion1" class="form-select" required="" id="seccion1" style="display: none;" onchange="mostrarSelects(this)">
+        <option value="" selected="">---------</option>
+{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+{% if nivel == 1 %}
+        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+{% endif %}
+{% endfor %}
+    </select>
+
+    <select name="seccion2" class="form-select" id="seccion2" style="display: none;" onchange="mostrarSelects(this)">
+        <option value="" selected="">---------</option>
+{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+{% if nivel == 2 %}
+        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+{% endif %}
+{% endfor %}
+    </select>
+
+    <select name="seccion3" class="form-select" id="seccion3" style="display: none;" onchange="mostrarSelects(this)">
+        <option value="" selected="">---------</option>
+{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+{% if nivel == 3 %}
+        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+{% endif %}
+{% endfor %}
+    </select>
+
+    <select name="seccion4" class="form-select" id="seccion4" style="display: none;">
+        <option value="" selected="">---------</option>
+{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+{% if nivel == 4 %}
+        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+{% endif %}
+{% endfor %}
+    </select>
+{% endif %}
+
+<div class="mb-3 text-center">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+</div>
+
+</form>
+
+
+
+
+<script>
+    const selectSeccion0 = document.getElementById('seccion0');
+    const selectSeccion1 = document.getElementById('seccion1');
+    const selectSeccion2 = document.getElementById('seccion2');
+    const selectSeccion3 = document.getElementById('seccion3');
+    const selectSeccion4 = document.getElementById('seccion4');
+    
+    const selectFormulario = document.getElementById('id_seccion');
+    
+    function mostrarSelects(selectCambiada) {
+        if (selectCambiada.id == 'seccion0') {
+            if (selectCambiada.value == '') {
+                selectSeccion1.style.display = 'none';
+                selectSeccion2.style.display = 'none';
+                selectSeccion3.style.display = 'none';
+                selectSeccion4.style.display = 'none';
+                selectSeccion1.value = '';
+                selectSeccion2.value = '';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = '';
+            } else {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'none';
+                selectSeccion3.style.display = 'none';
+                selectSeccion4.style.display = 'none';
+                selectSeccion1.value = '';
+                selectSeccion2.value = '';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectCambiada.value;
+
+                const opciones = selectSeccion1.options;
+                for (let i=0 ; i < opciones.length; i++){
+                    if (opciones[i].dataset.padre == selectCambiada.value){
+                        opciones[i].style.display = 'block';
+                    } else {
+                        opciones[i].style.display = 'none';
+                    }
+                }
+            }
+        } else if (selectCambiada.id == 'seccion1') {
+            if (selectCambiada.value == '') {
+                selectSeccion2.style.display = 'none';
+                selectSeccion3.style.display = 'none';
+                selectSeccion4.style.display = 'none';
+                selectSeccion2.value = '';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectSeccion0.value;
+            } else {
+                selectSeccion2.style.display = 'block';
+                selectSeccion3.style.display = 'none';
+                selectSeccion4.style.display = 'none';
+                selectSeccion2.value = '';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectCambiada.value;
+
+                const opciones = selectSeccion2.options;
+                for (let i=0 ; i < opciones.length; i++){
+                    if (opciones[i].dataset.padre == selectCambiada.value){
+                        opciones[i].style.display = 'block';
+                    } else {
+                        opciones[i].style.display = 'none';
+                    }
+                }
+            }
+        } else if (selectCambiada.id == 'seccion2') {
+            if (selectCambiada.value == '') {
+                selectSeccion3.style.display = 'none';
+                selectSeccion4.style.display = 'none';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectSeccion1.value;
+            } else {
+                selectSeccion3.style.display = 'block';
+                selectSeccion4.style.display = 'none';
+                selectSeccion3.value = '';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectCambiada.value;
+
+                const opciones = selectSeccion3.options;
+                for (let i=0 ; i < opciones.length; i++){
+                    if (opciones[i].dataset.padre == selectCambiada.value){
+                        opciones[i].style.display = 'block';
+                    } else {
+                        opciones[i].style.display = 'none';
+                    }
+                }
+            }
+        } else if (selectCambiada.id == 'seccion3') {
+            if (selectCambiada.value == '') {
+                selectSeccion4.style.display = 'none';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectSeccion2.value;
+            } else {
+                selectSeccion4.style.display = 'block';
+                selectSeccion4.value = '';
+                selectFormulario.value = selectCambiada.value;
+
+                const opciones = selectSeccion4.options;
+                for (let i=0 ; i < opciones.length; i++){
+                    if (opciones[i].dataset.padre == selectCambiada.value){
+                        opciones[i].style.display = 'block';
+                    } else {
+                        opciones[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}

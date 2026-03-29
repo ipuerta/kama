@@ -59,7 +59,7 @@ class ArtistasCompañiasAdmin(admin.ModelAdmin):
     
     list_display_links = ('artista',)
 
-    search_fields = ('artista', 'compañia')
+    search_fields = ('artista.nombre', 'compañia.nombre')
      
 @admin.register(Grupos)
 class GruposAdmin(admin.ModelAdmin):
@@ -75,7 +75,7 @@ class GruposNombresAdmin(admin.ModelAdmin):
     
     list_display_links = ('nombre',)
     
-    search_fields = ('grupo', 'nombre')
+    search_fields = ('grupo.nombre', 'nombre')
      
 @admin.register(Grupos_Compañias)
 class GruposCompañiasAdmin(admin.ModelAdmin):
@@ -83,7 +83,7 @@ class GruposCompañiasAdmin(admin.ModelAdmin):
     
     list_display_links = ('grupo',)
     
-    search_fields = ('grupo', 'compañia')
+    search_fields = ('grupo.nombre', 'compañia.nombre')
      
 @admin.register(Artistas_Grupos)
 class ArtistasGruposAdmin(admin.ModelAdmin):
@@ -91,7 +91,7 @@ class ArtistasGruposAdmin(admin.ModelAdmin):
     
     list_display_links = ('artista',)
     
-    search_fields = ('artista', 'grupo')
+    search_fields = ('artista.nombre', 'grupo.nombre')
      
 @admin.register(Secciones)
 class SeccionesAdmin(admin.ModelAdmin):
@@ -115,7 +115,7 @@ class VideosGruposAdmin(admin.ModelAdmin):
     
     list_display_links = ('video',)
     
-    search_fields = ('video', 'grupo')
+    search_fields = ('video', 'grupo.nombre')
      
 @admin.register(Videos_Artistas)
 class VideosArtistasAdmin(admin.ModelAdmin):
@@ -123,7 +123,7 @@ class VideosArtistasAdmin(admin.ModelAdmin):
     
     list_display_links = ('video',)
     
-    search_fields = ('video', 'artista')
+    search_fields = ('video', 'artista.nombre')
 
 
 

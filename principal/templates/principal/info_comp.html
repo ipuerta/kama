@@ -1,0 +1,90 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-lg-3">
+    <div class="card border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="formulario" value="modCompañia">
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ compañia.nombre }}</li>
+            <li class="list-group-item">
+                {{ form.pais.label_tag }} 
+                <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_pais' compañia.pais.id %}">{{ compañia.pais }}</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                </svg>
+            </li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
+        </ul>
+        <ul class="list-group" id="formulario" style="display:none;">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">{{ form.nombre.label_tag }} {{ form.nombre }} {{ form.nombre.errors }}</li>
+            <li class="list-group-item">{{ form.pais.label_tag }} {{ form.pais }} {{ form.pais.errors }}</li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center"><button type="submit" class="btn">Guardar</button></li>
+        </ul>
+    </form>
+
+    </div>
+</div>
+
+
+<div class="col-lg-9">
+    <div class="accordion">
+        <div class="accordion-item" id="accordionGrupos">
+            <div class="accordion-header">
+                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Grupos</button>
+            </div>
+        </div>
+        <div id="collapseOne" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                {% if grupos %}
+                    <div class="row g-4">
+                    {% for grupo in grupos %}
+                    <div class="col-4 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm hub-card bg-primary bg-opacity-25 text-center">
+                            <a href="{% url 'info_grupo' grupo.grupo.id %}" class="text-decoration-none text-dark">{{ grupo.grupo.nombre }}</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    
+        <div class="accordion-item" id="accordionArtistas">
+            <div class="accordion-header">
+                <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">Artistas</button>
+            </div>
+        </div>
+        <div id="collapseTwo" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                {% if artistas %}
+                    <div class="row g-4">
+                    {% for artista in artistas %}
+                    <div class="col-4 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm hub-card bg-primary bg-opacity-25 text-center">
+                            <a href="{% url 'info_artista' artista.artista.id %}" class="text-decoration-none text-dark">{{ artista.artista.nombre }} ({{ artista.artista.fecha_nacimiento|date:"Y" }})</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+function activarEdicion() {
+    document.getElementById("detalle").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+}
+</script>
+{% endblock %}

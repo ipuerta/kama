@@ -2,15 +2,20 @@
 
 {% block content %}
 
+<div class="row">
 <div class="col-lg-3">
-    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
+    <div class="card border-0 shadow-sm hub-card mb-3">
         
     <form method="POST">
         {% csrf_token %}
+        <input type="hidden" name="formulario" value="modGrupo">
         <ul class="list-group" id="detalle">
             <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
             <li class="list-group-item">{{ form.nombre.label_tag }} {{ grupo.nombre }}</li>
+            {% if grupo.nombre_coreano %}
             <li class="list-group-item">{{ form.nombre_coreano.label_tag }} {{ grupo.nombre_coreano|default:"-" }}</li>
+            {% endif %}
+            {% if grupo.padre %}
             <li class="list-group-item">{{ form.padre.label_tag }}
                 <a class="link-underline link-underline-opacity-0" style="color:black;" {% if grupo.padre %}href="{% url 'info_grupo' grupo.padre.id %}"{% endif %}>
                     {{ grupo.padre|default:"-" }}
@@ -22,9 +27,17 @@
                     {% endif %}
                 </a>
             </li>
+            {% endif %}
             <li class="list-group-item">{{ form.nombre_fandom.label_tag }} {{ grupo.nombre_fandom }}</li>
             <li class="list-group-item">{{ form.fecha_debut.label_tag }} {{ grupo.fecha_debut|date:"d-m-Y" }}</li>
-            <li class="list-group-item">{{ form.pais.label_tag }} {{ grupo.pais }}</li>
+            <li class="list-group-item">
+                {{ form.pais.label_tag }} 
+                <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_pais' grupo.pais.id %}">{{ grupo.pais }}</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                </svg>
+            </li>
             <li class="list-group-item">{{ form.enlace.label_tag }} {{ grupo.enlace }} </li>
             <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
         </ul>
@@ -43,12 +56,14 @@
 
     </div>
 
-    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
-        {% if hijos %}
-        <ul class="list-group" id="hijos">
-            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Subgrupos</li>
+
+    <div class="card border-0 shadow-sm hub-card mb-3 text-bg-light">
+        <div class="card">
+            <h5 class="card-title text-bg-primary text-dark d-flex align-items-center justify-content-center" style="min-height: 3rem;">Subgrupos</h5>
+            <div class="card-body text-bg-light justify-content-center">
+            {% if hijos %}
             {% for hijo in hijos %}
-                <li class="list-group-item text-center">
+                <div class="card text-center text-bg-secondary">
                     <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_grupo' hijo.id %}">
                         {{ hijo.nombre }}
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
@@ -56,36 +71,197 @@
                             <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
                         </svg>
                     </a>
-                </li>
+                </div>
             {% endfor %}
-        </ul>
-        {% endif %}
+            {% endif %}
+            </div>
+        </div>
     </div>
 
-    <div class="card h-100 border-0 shadow-sm hub-card mb-3">
-        <ul class="list-group" id="Artistas">
-            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Miembros</li>
+    <div class="card border-0 shadow-sm hub-card mb-3 text-bg-light">
+        <div class="card">
+            <h5 class="card-title text-bg-primary text-dark d-flex align-items-center justify-content-center" style="min-height: 3rem;">Compañias</h5>
+            <div class="card-body text-bg-light justify-content-center">
+            {% if compañias %}
+            {% for compañia in compañias %}
+                <div class="card text-bg-secondary">
+                    <div class="container text-center">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_comp' compañia.compañia.id %}">
+                                    {{ compañia.compañia.nombre }}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn" data-bs-toggle="modal"
+                                    data-modal="altaGrupoCompañia" 
+                                    data-id="{{ compañia.id }}" 
+                                    data-formulario="modGrupoCompañia"
+                                    data-compañia="{{ compañia.compañia.id }}"
+                                    data-fecha-desde="{{ compañia.fecha_desde|date:'Y-m-d' }}"
+                                    data-fecha-hasta="{{ compañia.fecha_hasta|date:'Y-m-d' }}"
+                                    onclick="abrirModal(this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% endif %}
+            </div>
+            <div class="card-footer text-bg-primary text-center text-dark" style="min-height: 3rem;">
+                <button type="button" class="btn" data-bs-toggle="modal" id="botonAltaGrupoCompañia"
+                    data-modal="altaGrupoCompañia" 
+                    data-id="" 
+                    data-formulario="altaGrupoCompañia"
+                    data-compañia=""
+                    data-fecha-desde=""
+                    data-fecha-hasta=""
+                    onclick="abrirModal(this)">
+                    Añadir
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card border-0 shadow-sm hub-card mb-3 text-bg-light">
+        <div class="card">
+            <h5 class="card-title text-bg-primary text-dark d-flex align-items-center justify-content-center" style="min-height: 3rem;">Miembros</h5>
+            <div class="card-body text-bg-light justify-content-center">
             {% if relaciones %}
             {% for relacion in relaciones %}
-                <li class="list-group-item text-center">
+                <div class="card text-center text-bg-secondary">
                     <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_artista' relacion.artista.id %}">
-                        {{ relacion.artista.nombre }}
+                        {{ relacion.artista.nombre }} ({{ relacion.artista.fecha_nacimiento|date:"Y" }})
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
                             <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
                             <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
                         </svg>
                     </a>
-                </li>
+                </div>
             {% endfor %}
             {% endif %}
-        </ul>
+            </div>
+        </div>
     </div>
+</div>
+
+
+<div class="col-lg-9">
+        <div class="card">
+            <h5 class="card-title text-bg-primary text-dark d-flex align-items-center justify-content-center">
+                Videos
+                <a href="{% url 'alta_video' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                        <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                    </svg>
+                </a>
+            </h5>
+
+            <div class="card-body text-bg-light justify-content-center">
+            {% if arbolSecciones %}
+                <div class="accordion">
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in arbolSecciones %}
+                {% if nivel == 0 %}
+                    <div class="accordion-item" id="accordionSeccion{{ idPadre }}">
+                        <div class="accordion-header">
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{ idPadre }}" aria-expanded="true" aria-controls="accordion{{ idPadre }}">{{ nombre_seccion }}</button>
+                        </div>
+                    </div>
+                {% else %}
+                    <div id="accordion{{ idPadre }}" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row justify-content-start">
+                            <div class="col bg-primary bg-opacity-25">
+                                    <h6 class="">{{ nombre_seccion }}</h6>
+                            </div>
+                            </div>
+                            {% for video in videos %}
+                                {% if video.seccion.id == id_seccion %} 
+                                    <div class="row g-4">
+                                    <div class="col-4 col-md-4 align-items-center">
+                                        <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_video' video.id %}">
+                                            {{ video.fecha|date:'Y-m-d' }} - {{ video.nombre }}
+                                        </a>
+                                        <a href="{{ video.enlace }}" target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                                                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+        </div>
+</div>
+</div>
+
+<div class="modal fade" id="altaGrupoCompañia" tabindex="-1" aria-labelledby="altaGrupoCompañiaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="altaGrupoCompañiaLabel">Añadir Compañía</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+            <input type="hidden" id="formulario" name="formulario" value="altaGrupoCompañia">
+            <input type="hidden" id="id_relacion" name="id_relacion" value="">
+          {{ form2.grupo }} {{ form2.grupo.errors }}
+          {{ form2.compañia.label_tag }} {{ form2.compañia }} {{ form2.compañia.errors }}
+          {{ form2.fecha_desde.label_tag }} {{ form2.fecha_desde }} {{ form2.fecha_desde.errors }}
+          {{ form2.fecha_hasta.label_tag }} {{ form2.fecha_hasta }} {{ form2.fecha_hasta.errors }}
+          <button type="submit" class="btn btn-success mt-3">Guardar</button>
+        </form>
+      </div>
+      
+    </div>
+  </div>
 </div>
 
 <script>
 function activarEdicion() {
     document.getElementById("detalle").style.display = "none";
     document.getElementById("formulario").style.display = "block";
+}
+
+function abrirModal(boton) {
+    console.log(boton);
+
+    const dato_modal = boton.getAttribute("data-modal");
+    const dato_formulario = boton.getAttribute("data-formulario");
+    const dato_id = boton.getAttribute("data-id");
+    const dato_compañia = boton.getAttribute("data-compañia");
+    const dato_fecha_desde = boton.getAttribute("data-fecha-desde");
+    const dato_fecha_hasta = boton.getAttribute("data-fecha-hasta");
+
+    document.getElementById(dato_modal).querySelector("[id='id_compañia']").value = dato_compañia;
+    document.getElementById(dato_modal).querySelector("[id='id_fecha_desde']").value = dato_fecha_desde;
+    document.getElementById(dato_modal).querySelector("[id='id_fecha_hasta']").value = dato_fecha_hasta;
+    document.getElementById(dato_modal).querySelector("[id='id_relacion']").value = dato_id;
+    document.getElementById(dato_modal).querySelector("[id='formulario']").value = dato_formulario;
+    const modal = new bootstrap.Modal(document.getElementById(dato_modal));
+    modal.show();
 }
 </script>
 {% endblock %}

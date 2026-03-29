@@ -3,10 +3,10 @@
 {% block content %}
 <div class="row g-4">
 
-    {% for artista in artistas %}
+    {% for compañia in compañias %}
     <div class="col-6 col-md-3">
         <div class="card h-100 border-0 shadow-sm hub-card bg-primary bg-opacity-25 text-center fw-bold">
-            <a href="{% url 'info_artista' artista.id %}" class="text-decoration-none text-dark">{{ artista.nombre }} ({{ artista.fecha_nacimiento|date:"Y" }})</a>
+            <a href="{% url 'info_comp' compañia.id %}" class="text-decoration-none text-dark">{{ compañia.nombre }}</a>
         </div>
     </div>
     {% endfor %}

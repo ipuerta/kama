@@ -118,7 +118,7 @@ class Grupos_Compañias(models.Model):
         verbose_name_plural = "Grupos_Compañias" 
     
     def __str__(self):
-        return self.grupo
+        return self.grupo.nombre
 
 class Artistas_Grupos(models.Model):
     artista = models.ForeignKey(Artistas, on_delete=models.CASCADE)
@@ -135,7 +135,7 @@ class Artistas_Grupos(models.Model):
 
 class Secciones(models.Model):
     nombre = models.CharField(max_length=100)
-    padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='hijos')
     orden = models.IntegerField()
     seleccionable = models.CharField(max_length=1)
     
@@ -144,7 +144,7 @@ class Secciones(models.Model):
         verbose_name_plural = "Secciones" 
     
     def __str__(self):
-        return self.titulo
+        return self.nombre
 
 class Videos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -157,7 +157,7 @@ class Videos(models.Model):
         verbose_name_plural = "Videos" 
     
     def __str__(self):
-        return self.titulo
+        return self.nombre
 
 class Videos_Grupos(models.Model):
     video = models.ForeignKey(Videos, on_delete=models.CASCADE)

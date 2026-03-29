@@ -1,5 +1,6 @@
 from django import forms
-from .models import Grupos, Artistas, Artistas_Grupos, Ciudades, Paises
+from django.db.models.functions import Lower
+from .models import Grupos, Artistas, Artistas_Grupos, Ciudades, Paises, Compañias, Grupos_Compañias, Artistas_Compañias, Videos, Secciones, Videos_Grupos, Videos_Artistas
 
 class AltaGrupoForm(forms.ModelForm):
     class Meta:
@@ -19,6 +20,9 @@ class AltaGrupoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.fields['padre'].queryset = Grupos.objects.all().order_by(Lower('nombre'))
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
 
 class ModGrupoForm(forms.ModelForm):
     class Meta:
@@ -38,6 +42,9 @@ class ModGrupoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.fields['padre'].queryset = Grupos.objects.all().order_by(Lower('nombre'))
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
 
 class AltaArtistaForm(forms.ModelForm):
     class Meta:
@@ -59,6 +66,9 @@ class AltaArtistaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
+        self.fields['ciudad'].queryset = Ciudades.objects.all().order_by(Lower('nombre'))
 
 class ModArtistaForm(forms.ModelForm):
     class Meta:
@@ -80,6 +90,9 @@ class ModArtistaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
+        self.fields['ciudad'].queryset = Ciudades.objects.all().order_by(Lower('nombre'))
 
 class AltaRelacion(forms.ModelForm):
     class Meta:
@@ -96,6 +109,8 @@ class AltaRelacion(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        self.fields['grupo'].queryset = Grupos.objects.all().order_by(Lower('nombre'))
 
 class AltaCiudad(forms.ModelForm):
     class Meta:
@@ -124,64 +139,124 @@ class AltaPais(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-#class BandaForm(forms.ModelForm):
-#    class Meta:
-#        model = Grupos
-#        # Definimos los campos que pediste
-#        # fields = ['nombre', 'tipo', 'nombre_fandom', 'fecha_debut', 'pais', 'ciudad', 'compañia', 'mega']
-#        fields = ['nombre', 'tipo', 'nombre_fandom', 'fecha_debut', 'pais', 'compañia', 'mega']
+class AltaCompañia(forms.ModelForm):
+    class Meta:
+        model = Compañias
+        fields = ['nombre', 'padre', 'pais']
         
-#        # Personalizamos los widgets (el HTML que se genera)
-#        widgets = {
-#            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#            'tipo': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-#            'nombre_fandom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#            'fecha_debut': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#            'pais': forms.Select(attrs={'class': 'form-select'}),
-#            #'ciudad': forms.Select(attrs={'class': 'form-select', 'disabled': 'disabled'}),
-#            'compañia': forms.Select(attrs={'class': 'form-select'}),
-#            'mega': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#        }
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'padre': forms.Select(attrs={'class': 'form-select'}),
+            'pais': forms.Select(attrs={'class': 'form-select'}),
+        }
 
-#    def __init__(self, *args, **kwargs):
-#        super().__init__(*args, **kwargs)
-#        # Bloqueamos el campo 'tipo' para que siempre sea BAND
-#        self.fields['tipo'].initial = 'BAND' 
-#        # Esto hace que aunque el usuario intente cambiarlo en el HTML, el servidor lo ignore
-#        self.fields['tipo'].disabled = True
-
-#class ArtistaForm(forms.ModelForm):
-#    class Meta:
-#        model = Artista
-#        # Definimos los campos que pediste
-#        fields = ['nombre', 'nombre_nacimiento', 'fecha_nacimiento', 'pais', 'ciudad', 'compañia', 'mega']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         
-#        # Personalizamos los widgets (el HTML que se genera)
-#        widgets = {
-#            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#            'nombre_nacimiento': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#            'pais': forms.Select(attrs={'class': 'form-select'}),
-#            'ciudad': forms.Select(attrs={'class': 'form-select', 'disabled': 'disabled'}),
-#            'compañia': forms.Select(attrs={'class': 'form-select'}),
-#            'mega': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
-#        }
+        self.fields['padre'].queryset = Compañias.objects.all().order_by(Lower('nombre'))
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
 
-#    def __init__(self, *args, **kwargs):
-#        super().__init__(*args, **kwargs)
+class ModCompañiaForm(forms.ModelForm):
+    class Meta:
+        model = Compañias
+        fields = ['nombre', 'padre', 'pais']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'padre': forms.Select(attrs={'class': 'form-select'}),
+            'pais': forms.Select(attrs={'class': 'form-select'}),
+        }
 
-#class PaisForm(forms.ModelForm):
-#    class Meta:
-#        model = Pais
-#        fields = ['nombre']
-#        widgets = {
-#            'nombre': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_nombre_pais'})
-#        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-#class CompañiasForm(forms.ModelForm):
-#    class Meta:
-#        model = Compañias
-#        fields = ['nombre']
-#        widgets = {
-#            'nombre': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_compañia'})
-#        }
+        self.fields['padre'].queryset = Compañias.objects.all().order_by(Lower('nombre'))
+        self.fields['pais'].queryset = Paises.objects.all().order_by(Lower('nombre'))
+
+class AltaGrupoCompañia(forms.ModelForm):
+    class Meta:
+        model = Grupos_Compañias
+        fields = ['grupo', 'compañia', 'fecha_desde', 'fecha_hasta']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'grupo': forms.HiddenInput(),
+            'compañia': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_desde': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_hasta': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['compañia'].queryset = Compañias.objects.all().order_by(Lower('nombre'))
+
+class AltaArtistaCompañia(forms.ModelForm):
+    class Meta:
+        model = Artistas_Compañias
+        fields = ['artista', 'compañia', 'fecha_desde', 'fecha_hasta']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'artista': forms.HiddenInput(),
+            'compañia': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_desde': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_hasta': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['compañia'].queryset = Compañias.objects.all().order_by(Lower('nombre'))
+
+class AltaVideo(forms.ModelForm):
+    class Meta:
+        model = Videos
+        fields = ['nombre', 'enlace', 'fecha', 'seccion']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'enlace': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'seccion': forms.HiddenInput(attrs={'class': 'form-control', 'placeholder': ''}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['seccion'].queryset = Secciones.objects.all().order_by('orden')
+
+class AltaVideoGrupo(forms.ModelForm):
+    class Meta:
+        model = Videos_Grupos
+        fields = ['video', 'grupo']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'video': forms.HiddenInput(),
+            'grupo': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['grupo'].queryset = Grupos.objects.all().order_by(Lower('nombre'))
+
+class AltaVideoArtista(forms.ModelForm):
+    class Meta:
+        model = Videos_Artistas
+        fields = ['video', 'artista']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'video': forms.HiddenInput(),
+            'artista': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['artista'].queryset = Artistas.objects.all().order_by(Lower('nombre'))

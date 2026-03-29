@@ -1,0 +1,405 @@
+{% extends 'principal/base.html' %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-lg-6">
+    <div class="card border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="formulario" value="modVideo">
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">Título: {{ video.nombre }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ video.enlace }}</li>
+            <li class="list-group-item">{{ form.fecha.label_tag }} {{ video.fecha|date:"d-m-Y" }}</li>
+            <li class="list-group-item">Secciones:
+                {% if seccionesFiltradas %}
+                <ul class="list-group mt-2" id="detalle">
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in seccionesFiltradas %}
+                    <li class="list-group-item"><input type="hidden" id="hidden_nivel{{nivel}}" data-id="{{ id_seccion }}">{{ nombre_seccion }}</li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
+        </ul>
+        <ul class="list-group" id="formulario" style="display:none;">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Datos</li>
+            <li class="list-group-item">Título: {{ form.nombre }} {{ form.nombre.errors }}</li>
+            <li class="list-group-item">{{ form.enlace.label_tag }} {{ form.enlace }} {{ form.enlace.errors }}</li>
+            <li class="list-group-item">{{ form.fecha.label_tag }} {{ form.fecha }} {{ form.fecha.errors }}</li>
+            <li class="list-group-item">Secciones: {{ form.seccion }} {{ form.seccion.errors }}
+                {% if secciones %}
+                    <select name="seccion0" class="form-select" required="" id="seccion0" onchange="mostrarSelects(this)">
+                        <option value="" selected="">---------</option>
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% if nivel == 0 %}
+                        <option value="{{id_seccion}}">{{ nombre_seccion }}</option>
+                {% endif %}
+                {% endfor %}
+                    </select>
+
+                    <select name="seccion1" class="form-select" required="" id="seccion1" style="display: none;" onchange="mostrarSelects(this)">
+                        <option value="" selected="">---------</option>
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% if nivel == 1 %}
+                        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+                {% endif %}
+                {% endfor %}
+                    </select>
+
+                    <select name="seccion2" class="form-select" id="seccion2" style="display: none;" onchange="mostrarSelects(this)">
+                        <option value="" selected="">---------</option>
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% if nivel == 2 %}
+                        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+                {% endif %}
+                {% endfor %}
+                    </select>
+
+                    <select name="seccion3" class="form-select" id="seccion3" style="display: none;" onchange="mostrarSelects(this)">
+                        <option value="" selected="">---------</option>
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% if nivel == 3 %}
+                        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+                {% endif %}
+                {% endfor %}
+                    </select>
+
+                    <select name="seccion4" class="form-select" id="seccion4" style="display: none;">
+                        <option value="" selected="">---------</option>
+                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% if nivel == 4 %}
+                        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+                {% endif %}
+                {% endfor %}
+                    </select>
+                {% endif %}
+            </li>
+            <li class="list-group-item bg-primary bg-opacity-25 text-center"><button type="submit" class="btn">Guardar</button></li>
+        </ul>
+    </form>
+
+    </div>
+</div>
+
+<div class="col-lg-3">
+    <div class="card border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Grupos</li>
+            {% if gruposFiltrados %}
+            {% for grupo in gruposFiltrados %}
+                <li class="list-group-item">
+                    <a href="{% url 'info_grupo' grupo.grupo.id %}" class="text-decoration-none text-dark">{{ grupo.grupo.nombre }}</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                    </svg>
+
+                    <button type="button" class="btn" id="botonBorraVideoGrupo"
+                        data-modal="altaVideoGrupo" 
+                        data-id="{{ grupo.id }}" 
+                        data-formulario="borraVideoGrupo"
+                        onclick="abrirModal(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>
+                    </button>
+                </li>
+            {% endfor %}
+            {% endif %}
+            <li class="list-group-item bg-primary bg-opacity-25 text-center">
+                <button type="button" class="btn" data-bs-toggle="modal" id="botonAltaVideoGrupo"
+                    data-modal="altaVideoGrupo" 
+                    data-id="" 
+                    data-formulario="altaVideoGrupo"
+                    onclick="abrirModal(this)">
+                    Añadir
+                </button>
+            </li>
+        </ul>
+    </form>
+
+    </div>
+</div>
+
+<div class="col-lg-3">
+    <div class="card border-0 shadow-sm hub-card mb-3">
+        
+    <form method="POST">
+        <ul class="list-group" id="detalle">
+            <li class="list-group-item bg-primary bg-opacity-25 fw-bold text-center">Artistas</li>
+            {% if artistasFiltrados %}
+            {% for artista in artistasFiltrados %}
+                <li class="list-group-item">
+                    <a href="{% url 'info_artista' artista.artista.id %}" class="text-decoration-none text-dark">{{ artista.artista.nombre }}</a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                    </svg>
+
+                    <button type="button" class="btn" id="botonBorraVideoArtista"
+                        data-modal="altaVideoArtista" 
+                        data-id="{{ artista.id }}" 
+                        data-formulario="borraVideoArtista"
+                        onclick="abrirModal(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>
+                    </button>
+                </li>
+            {% endfor %}
+            {% endif %}
+            <li class="list-group-item bg-primary bg-opacity-25 text-center">
+                <button type="button" class="btn" data-bs-toggle="modal" id="botonAltaVideoArtista"
+                    data-modal="altaVideoArtista" 
+                    data-id="" 
+                    data-formulario="altaVideoArtista"
+                    onclick="abrirModal(this)">
+                    Añadir
+                </button>
+            </li>
+        </ul>
+    </form>
+
+    </div>
+</div>
+</div>
+
+
+
+<div class="modal fade" id="altaVideoGrupo" tabindex="-1" aria-labelledby="altaVideoGrupoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="altaVideoGrupoLabel">Añadir Grupo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form method="POST" id="formularioVideoGrupo">
+          {% csrf_token %}
+            <input type="hidden" id="formulario" name="formulario" value="altaVideoGrupo">
+            <input type="hidden" id="id_relacion" name="id_relacion" value="">
+          {{ form2.grupo.label_tag }} {{ form2.grupo }} {{ form2.grupo.errors }}
+          {{ form2.video.label_tag }} {{ form2.video }} {{ form2.video.errors }}
+          <button type="submit" class="btn btn-success mt-3">Guardar</button>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="altaVideoArtista" tabindex="-1" aria-labelledby="altaVideoArtistaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="altaVideoArtistaLabel">Añadir Artista</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form method="POST" id="formularioVideoArtista">
+          {% csrf_token %}
+            <input type="hidden" id="formulario" name="formulario" value="altaVideoArtista">
+            <input type="hidden" id="id_relacion" name="id_relacion" value="">
+          {{ form3.artista.label_tag }} {{ form3.artista }} {{ form3.artista.errors }}
+          {{ form3.video.label_tag }} {{ form3.video }} {{ form3.video.errors }}
+          <button type="submit" class="btn btn-success mt-3">Guardar</button>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+
+const selectSeccion0 = document.getElementById('seccion0');
+const selectSeccion1 = document.getElementById('seccion1');
+const selectSeccion2 = document.getElementById('seccion2');
+const selectSeccion3 = document.getElementById('seccion3');
+const selectSeccion4 = document.getElementById('seccion4');
+
+const selectFormulario = document.getElementById('id_seccion');
+
+function mostrarSelects(selectCambiada) {
+    if (selectCambiada.id == 'seccion0') {
+        if (selectCambiada.value == '') {
+            selectSeccion1.style.display = 'none';
+            selectSeccion2.style.display = 'none';
+            selectSeccion3.style.display = 'none';
+            selectSeccion4.style.display = 'none';
+            selectSeccion1.value = '';
+            selectSeccion2.value = '';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = '';
+        } else {
+            selectSeccion1.style.display = 'block';
+            selectSeccion2.style.display = 'none';
+            selectSeccion3.style.display = 'none';
+            selectSeccion4.style.display = 'none';
+            selectSeccion1.value = '';
+            selectSeccion2.value = '';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectCambiada.value;
+
+            const opciones = selectSeccion1.options;
+            for (let i=0 ; i < opciones.length; i++){
+                if (opciones[i].dataset.padre == selectCambiada.value){
+                    opciones[i].style.display = 'block';
+                } else {
+                    opciones[i].style.display = 'none';
+                }
+            }
+        }
+    } else if (selectCambiada.id == 'seccion1') {
+        if (selectCambiada.value == '') {
+            selectSeccion2.style.display = 'none';
+            selectSeccion3.style.display = 'none';
+            selectSeccion4.style.display = 'none';
+            selectSeccion2.value = '';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectSeccion0.value;
+        } else {
+            selectSeccion2.style.display = 'block';
+            selectSeccion3.style.display = 'none';
+            selectSeccion4.style.display = 'none';
+            selectSeccion2.value = '';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectCambiada.value;
+
+            const opciones = selectSeccion2.options;
+            for (let i=0 ; i < opciones.length; i++){
+                if (opciones[i].dataset.padre == selectCambiada.value){
+                    opciones[i].style.display = 'block';
+                } else {
+                    opciones[i].style.display = 'none';
+                }
+            }
+        }
+    } else if (selectCambiada.id == 'seccion2') {
+        if (selectCambiada.value == '') {
+            selectSeccion3.style.display = 'none';
+            selectSeccion4.style.display = 'none';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectSeccion1.value;
+        } else {
+            selectSeccion3.style.display = 'block';
+            selectSeccion4.style.display = 'none';
+            selectSeccion3.value = '';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectCambiada.value;
+
+            const opciones = selectSeccion3.options;
+            for (let i=0 ; i < opciones.length; i++){
+                if (opciones[i].dataset.padre == selectCambiada.value){
+                    opciones[i].style.display = 'block';
+                } else {
+                    opciones[i].style.display = 'none';
+                }
+            }
+        }
+    } else if (selectCambiada.id == 'seccion3') {
+        if (selectCambiada.value == '') {
+            selectSeccion4.style.display = 'none';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectSeccion2.value;
+        } else {
+            selectSeccion4.style.display = 'block';
+            selectSeccion4.value = '';
+            selectFormulario.value = selectCambiada.value;
+
+            const opciones = selectSeccion4.options;
+            for (let i=0 ; i < opciones.length; i++){
+                if (opciones[i].dataset.padre == selectCambiada.value){
+                    opciones[i].style.display = 'block';
+                } else {
+                    opciones[i].style.display = 'none';
+                }
+            }
+        }
+    }
+}
+
+function activarEdicion() {
+    const select0 = document.getElementById('hidden_nivel0');
+    const select1 = document.getElementById('hidden_nivel1');
+    const select2 = document.getElementById('hidden_nivel2');
+    const select3 = document.getElementById('hidden_nivel3');
+    const select4 = document.getElementById('hidden_nivel4');
+
+    if (select0){
+        document.getElementById('seccion0').value = select0.dataset.id;
+        mostrarSelects(document.getElementById('seccion0'));
+
+        if (select1) {
+            document.getElementById('seccion1').value = select1.dataset.id;
+            mostrarSelects(document.getElementById('seccion1'));
+
+            if (select2) {
+                document.getElementById('seccion2').value = select2.dataset.id;
+                mostrarSelects(document.getElementById('seccion2'));
+
+                if (select3) {
+                    document.getElementById('seccion3').value = select3.dataset.id;
+                    mostrarSelects(document.getElementById('seccion3'));
+
+                    if (select4) {
+                        document.getElementById('seccion4').value = select4.dataset.id;
+                    }
+                }
+            }
+        }
+    }
+
+    document.getElementById("detalle").style.display = "none";
+    document.getElementById("formulario").style.display = "block";
+}
+
+
+function abrirModal(boton) {
+    console.log(boton);
+
+    const dato_modal = boton.getAttribute("data-modal");
+    const dato_formulario = boton.getAttribute("data-formulario");
+    const dato_id = boton.getAttribute("data-id");
+
+    console.log(dato_modal);
+
+    document.getElementById(dato_modal).querySelector("[id='id_relacion']").value = dato_id;
+    document.getElementById(dato_modal).querySelector("[id='formulario']").value = dato_formulario;
+    const modal = new bootstrap.Modal(document.getElementById(dato_modal));
+
+    console.log(dato_formulario);
+    if (dato_formulario == 'borraVideoGrupo'){
+        const formulario = document.getElementById('formularioVideoGrupo');
+        console.log(formulario);
+        formulario.submit();
+    } else if (dato_formulario == 'borraVideoArtista'){
+        const formulario = document.getElementById('formularioVideoArtista');
+        console.log(formulario);
+        formulario.submit();
+    } else {
+        modal.show();
+    }
+}
+
+</script>
+{% endblock %}
