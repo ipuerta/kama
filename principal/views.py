@@ -357,7 +357,8 @@ def alta_video(request):
     if request.method == 'POST':
         form = AltaVideo(request.POST)
         if form.is_valid():
-            form.save()
+            video = form.save()
+            return redirect('info_video',  id=video.id)
     else:
         form = AltaVideo()
 
