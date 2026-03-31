@@ -170,7 +170,7 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if arbolSecciones %}
                 <div class="accordion">
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in arbolSecciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in arbolSecciones %}
                 {% if nivel == 0 %}
                     <div class="accordion-item" id="accordionSeccion{{ idPadre }}">
                         <div class="accordion-header">
