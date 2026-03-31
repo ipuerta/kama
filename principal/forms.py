@@ -260,3 +260,18 @@ class AltaVideoArtista(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['artista'].queryset = Artistas.objects.all().order_by(Lower('nombre'))
+
+class AltaSeccion(forms.ModelForm):
+    class Meta:
+        model = Secciones
+        fields = ['nombre', 'padre', 'orden']
+        
+        # Personalizamos los widgets (el HTML que se genera)
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'padre': forms.HiddenInput(attrs={'class': 'form-control', 'placeholder': ''}),
+            'orden': forms.HiddenInput(attrs={'class': 'form-control', 'placeholder': ''}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

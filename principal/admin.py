@@ -95,7 +95,7 @@ class ArtistasGruposAdmin(admin.ModelAdmin):
      
 @admin.register(Secciones)
 class SeccionesAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'padre', 'orden', 'seleccionable')
+    list_display = ('nombre', 'padre', 'orden')
     
     list_display_links = ('nombre',)
     

@@ -4,7 +4,7 @@ from django.db.models.functions import Lower
 from datetime import datetime
 from .models import Paises, Ciudades, Grupos, Artistas, Artistas_Grupos, Compañias, Grupos_Compañias, Artistas_Compañias, Secciones, Videos, Videos_Grupos, Videos_Artistas
 from .forms import AltaGrupoForm, ModGrupoForm, AltaArtistaForm, ModArtistaForm, AltaRelacion, AltaCiudad, AltaPais, AltaCompañia, ModCompañiaForm, AltaGrupoCompañia, AltaArtistaCompañia
-from .forms import AltaVideo, AltaVideoGrupo, AltaVideoArtista
+from .forms import AltaVideo, AltaVideoGrupo, AltaVideoArtista, AltaSeccion
 from django.views.decorators.csrf import csrf_protect
 
 
@@ -32,13 +32,12 @@ def obtenerArbolSecciones(seccionesFiltrar):
 
     def ordenar(nodos, idPadre=0, nivel=0):
         for nodo in nodos:
-            if nivel == 0:
-                idPadre = nodo.id
+            print(f"Nodo: {nodo.id} {nodo.nombre} Nivel {nivel} Padre {idPadre}")
 
-            arbolSecciones.append((nodo.id, nodo.nombre, nodo.seleccionable, nivel, idPadre))
-
+            arbolSecciones.append((nodo.id, nodo.nombre, nivel, idPadre))
+            
             hijos = nodo.hijos.filter(id__in=idsSecciones).order_by('orden')
-            ordenar(hijos, idPadre, nivel + 1)
+            ordenar(hijos, nodo.id, nivel + 1)
 
     ordenar(seccionesPadres)
 
@@ -353,22 +352,78 @@ def info_compañia(request, id):
 
 def alta_video(request):
     paises = Paises.objects.all().order_by(Lower('nombre'))
+
+    datos_form2 = {
+        'nombre': '',
+        'enlace': '',
+        'fecha': '',
+        'seccion0': '',
+        'seccion1': '',
+        'seccion2': '',
+        'seccion3': '',
+        'seccion4': ''
+    }
     
     if request.method == 'POST':
-        form = AltaVideo(request.POST)
-        if form.is_valid():
-            video = form.save()
-            return redirect('info_video',  id=video.id)
-    else:
-        form = AltaVideo()
+        if request.POST.get("formulario") == "altaVideo":
+            form = AltaVideo(request.POST)
+            if form.is_valid():
+                video = form.save()
+                return redirect('info_video',  id=video.id)
+        if request.POST.get("formulario") == "altaSeccion":
+            form2 = AltaSeccion(request.POST)
+            if form2.is_valid():
+                save_form2 = form2.save()
+                seccion0 = ''
+                seccion1 = ''
+                seccion2 = ''
+                seccion3 = ''
+                seccion4 = ''
+                if request.POST.get("fSeccion0") == '':
+                    seccion0 = save_form2.id
+                elif request.POST.get("fSeccion1") == '':
+                    seccion0 = request.POST.get("fSeccion0")
+                    seccion1 = save_form2.id
+                elif request.POST.get("fSeccion2") == '':
+                    seccion0 = request.POST.get("fSeccion0")
+                    seccion1 = request.POST.get("fSeccion1")
+                    seccion2 = save_form2.id
+                elif request.POST.get("fSeccion3") == '':
+                    seccion0 = request.POST.get("fSeccion0")
+                    seccion1 = request.POST.get("fSeccion1")
+                    seccion2 = request.POST.get("fSeccion2")
+                    seccion3 = save_form2.id
+                elif request.POST.get("fSeccion4") == '':
+                    seccion0 = request.POST.get("fSeccion0")
+                    seccion1 = request.POST.get("fSeccion1")
+                    seccion2 = request.POST.get("fSeccion2")
+                    seccion3 = request.POST.get("fSeccion3")
+                    seccion4 = save_form2.id
+
+                datos_form2 = {
+                    'nombre': request.POST.get("fNombre"),
+                    'enlace': request.POST.get("fEnlace"),
+                    'fecha': request.POST.get("fFecha"),
+                    'seccion0': seccion0,
+                    'seccion1': seccion1,
+                    'seccion2': seccion2,
+                    'seccion3': seccion3,
+                    'seccion4': seccion4,
+                    'seccionNombre': save_form2.nombre,
+                    'seccionPadre': save_form2.padre,
+                    'seccionOrden': save_form2.orden
+                }
 
     secciones = obtenerArbolSecciones(Secciones.objects.all())
     form = AltaVideo()
+    form2 = AltaSeccion()
 
     contexto = {
         'paises': paises,
         'secciones': secciones,
-        'form': form
+        'form': form,
+        'form2': form2,
+        'datos_form2': datos_form2
     }
      
     return render(request, 'principal/alta_video.html', contexto)

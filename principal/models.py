@@ -137,7 +137,6 @@ class Secciones(models.Model):
     nombre = models.CharField(max_length=100)
     padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='hijos')
     orden = models.IntegerField()
-    seleccionable = models.CharField(max_length=1)
     
     class Meta:
         verbose_name = "Sección"        

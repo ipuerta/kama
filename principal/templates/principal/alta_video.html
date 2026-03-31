@@ -3,6 +3,7 @@
 {% block content %}
 <form method="POST">
 {% csrf_token %}
+<input type="hidden" id="formulario" name="formulario" value="altaVideo">
 
 Título: {{ form.nombre }} {{ form.nombre.errors }}
 {{ form.enlace.label_tag }} {{ form.enlace }} {{ form.enlace.errors }}
@@ -11,50 +12,90 @@ Título: {{ form.nombre }} {{ form.nombre.errors }}
 
 Secciones:
 {% if secciones %}
-    <select name="seccion0" class="form-select" required="" id="seccion0" onchange="mostrarSelects(this)">
-        <option value="" selected="">---------</option>
-{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
-{% if nivel == 0 %}
-        <option value="{{id_seccion}}">{{ nombre_seccion }}</option>
-{% endif %}
-{% endfor %}
-    </select>
+    <div class="input-group">
+        <select name="seccion0" class="form-select" required="" id="seccion0" onchange="mostrarSelects(this)">
+            <option value="" selected="">---------</option>
+    {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
+    {% if nivel == 0 %}
+            <option value="{{id_seccion}}">{{ nombre_seccion }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+        <button type="button" class="btn text-bg-primary text-dark" data-bs-toggle="modal" onclick="abrirModal(this)" id="btnAddSec0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle mb-1 mt-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </button>
+    </div>
 
-    <select name="seccion1" class="form-select" required="" id="seccion1" style="display: none;" onchange="mostrarSelects(this)">
-        <option value="" selected="">---------</option>
-{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
-{% if nivel == 1 %}
-        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
-{% endif %}
-{% endfor %}
-    </select>
+    <div class="input-group mt-1">
+        <select name="seccion1" class="form-select col-9" required="" id="seccion1" style="display: none;" onchange="mostrarSelects(this)">
+            <option value="" selected="">---------</option>
+    {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
+    {% if nivel == 1 %}
+            <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+        <button type="button" class="btn text-bg-primary text-dark" data-bs-toggle="modal" onclick="abrirModal(this)" id="btnAddSec1" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle mb-1 mt-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </button>
+    </div>
 
-    <select name="seccion2" class="form-select" id="seccion2" style="display: none;" onchange="mostrarSelects(this)">
-        <option value="" selected="">---------</option>
-{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
-{% if nivel == 2 %}
-        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
-{% endif %}
-{% endfor %}
-    </select>
+    <div class="input-group mt-1">
+        <select name="seccion2" class="form-select col-9" id="seccion2" style="display: none;" onchange="mostrarSelects(this)">
+            <option value="" selected="">---------</option>
+    {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
+    {% if nivel == 2 %}
+            <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+        <button type="button" class="btn text-bg-primary text-dark" data-bs-toggle="modal" onclick="abrirModal(this)" id="btnAddSec2" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle mb-1 mt-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </button>
+    </div>
 
-    <select name="seccion3" class="form-select" id="seccion3" style="display: none;" onchange="mostrarSelects(this)">
-        <option value="" selected="">---------</option>
-{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
-{% if nivel == 3 %}
-        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
-{% endif %}
-{% endfor %}
-    </select>
+    <div class="input-group mt-1">
+        <select name="seccion3" class="form-select col-9" id="seccion3" style="display: none;" onchange="mostrarSelects(this)">
+            <option value="" selected="">---------</option>
+    {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
+    {% if nivel == 3 %}
+            <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+        <button type="button" class="btn text-bg-primary text-dark" data-bs-toggle="modal" onclick="abrirModal(this)" id="btnAddSec3" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle mb-1 mt-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </button>
+    </div>
 
-    <select name="seccion4" class="form-select" id="seccion4" style="display: none;">
-        <option value="" selected="">---------</option>
-{% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
-{% if nivel == 4 %}
-        <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
-{% endif %}
-{% endfor %}
-    </select>
+    <div class="input-group mt-1">
+        <select name="seccion4" class="form-select col-9" id="seccion4" style="display: none;">
+            <option value="" selected="">---------</option>
+    {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
+    {% if nivel == 4 %}
+            <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
+    {% endif %}
+    {% endfor %}
+        </select>
+        <button type="button" class="btn text-bg-primary text-dark" data-bs-toggle="modal" onclick="abrirModal(this)" id="btnAddSec4" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle mb-1 mt-1" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </button>
+    </div>
 {% endif %}
 
 <div class="mb-3 text-center">
@@ -63,18 +104,57 @@ Secciones:
 
 </form>
 
-
+<div class="modal fade" id="altaSeccion" tabindex="-1" aria-labelledby="altaSeccionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="altaSeccionLabel">Añadir Sección</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+            <input type="hidden" id="formulario" name="formulario" value="altaSeccion">
+            <input type="hidden" id="fNombre" name="fNombre" value="">
+            <input type="hidden" id="fEnlace" name="fEnlace" value="">
+            <input type="hidden" id="fFecha" name="fFecha" value="">
+            <input type="hidden" id="fSeccion0" name="fSeccion0" value="">
+            <input type="hidden" id="fSeccion1" name="fSeccion1" value="">
+            <input type="hidden" id="fSeccion2" name="fSeccion2" value="">
+            <input type="hidden" id="fSeccion3" name="fSeccion3" value="">
+            <input type="hidden" id="fSeccion4" name="fSeccion4" value="">
+          {{ form2.padre }} {{ form2.padre.errors }}
+          {{ form2.nombre.label_tag }} {{ form2.nombre }} {{ form2.nombre.errors }}
+          {{ form2.orden }} {{ form2.orden.errors }}
+          <button type="submit" class="btn btn-success mt-3">Guardar</button>
+        </form>
+        <div id="mensaje-exito" style="display: none;"></div>
+      </div>
+      
+    </div>
+  </div>
+</div>
 
 
 <script>
+    //Recojo las secciones y sus botones
     const selectSeccion0 = document.getElementById('seccion0');
     const selectSeccion1 = document.getElementById('seccion1');
     const selectSeccion2 = document.getElementById('seccion2');
     const selectSeccion3 = document.getElementById('seccion3');
     const selectSeccion4 = document.getElementById('seccion4');
+    const btnAddSec0 = document.getElementById('btnAddSec0');
+    const btnAddSec1 = document.getElementById('btnAddSec1');
+    const btnAddSec2 = document.getElementById('btnAddSec2');
+    const btnAddSec3 = document.getElementById('btnAddSec3');
+    const btnAddSec4 = document.getElementById('btnAddSec4');
     
+    //Recojo los datos del formulario
     const selectFormulario = document.getElementById('id_seccion');
     
+    //Función para mostrar/ocultar secciones según la que se rellene
     function mostrarSelects(selectCambiada) {
         if (selectCambiada.id == 'seccion0') {
             if (selectCambiada.value == '') {
@@ -87,6 +167,14 @@ Secciones:
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
                 selectFormulario.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'false';
+                btnAddSec0.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec0.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec1.style.display = 'none';
+                btnAddSec2.style.display = 'none';
+                btnAddSec3.style.display = 'none';
+                btnAddSec4.style.display = 'none';
             } else {
                 selectSeccion1.style.display = 'block';
                 selectSeccion2.style.display = 'none';
@@ -96,11 +184,22 @@ Secciones:
                 selectSeccion2.value = '';
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'false';
+                btnAddSec1.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec1.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec2.style.display = 'none';
+                btnAddSec3.style.display = 'none';
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectCambiada.value;
 
                 const opciones = selectSeccion1.options;
                 for (let i=0 ; i < opciones.length; i++){
-                    if (opciones[i].dataset.padre == selectCambiada.value){
+                    if (opciones[i].dataset.padre == selectCambiada.value || opciones[i].value == ''){
                         opciones[i].style.display = 'block';
                     } else {
                         opciones[i].style.display = 'none';
@@ -109,25 +208,52 @@ Secciones:
             }
         } else if (selectCambiada.id == 'seccion1') {
             if (selectCambiada.value == '') {
+                selectSeccion1.style.display = 'block';
                 selectSeccion2.style.display = 'none';
                 selectSeccion3.style.display = 'none';
                 selectSeccion4.style.display = 'none';
                 selectSeccion2.value = '';
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'false';
+                btnAddSec1.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec1.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec2.style.display = 'none';
+                btnAddSec3.style.display = 'none';
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectSeccion0.value;
             } else {
+                selectSeccion1.style.display = 'block';
                 selectSeccion2.style.display = 'block';
                 selectSeccion3.style.display = 'none';
                 selectSeccion4.style.display = 'none';
                 selectSeccion2.value = '';
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'false';
+                btnAddSec2.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec2.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec3.style.display = 'none';
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectCambiada.value;
 
                 const opciones = selectSeccion2.options;
                 for (let i=0 ; i < opciones.length; i++){
-                    if (opciones[i].dataset.padre == selectCambiada.value){
+                    if (opciones[i].dataset.padre == selectCambiada.value || opciones[i].value == ''){
                         opciones[i].style.display = 'block';
                     } else {
                         opciones[i].style.display = 'none';
@@ -136,21 +262,56 @@ Secciones:
             }
         } else if (selectCambiada.id == 'seccion2') {
             if (selectCambiada.value == '') {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
                 selectSeccion3.style.display = 'none';
                 selectSeccion4.style.display = 'none';
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'false';
+                btnAddSec2.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec2.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec3.style.display = 'none';
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectSeccion1.value;
             } else {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
                 selectSeccion3.style.display = 'block';
                 selectSeccion4.style.display = 'none';
                 selectSeccion3.value = '';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'true';
+                btnAddSec2.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec2.onclick = null;
+                btnAddSec3.style.display = 'block';
+                btnAddSec3.style.disabled = 'false';
+                btnAddSec3.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec3.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectCambiada.value;
 
                 const opciones = selectSeccion3.options;
                 for (let i=0 ; i < opciones.length; i++){
-                    if (opciones[i].dataset.padre == selectCambiada.value){
+                    if (opciones[i].dataset.padre == selectCambiada.value || opciones[i].value == ''){
                         opciones[i].style.display = 'block';
                     } else {
                         opciones[i].style.display = 'none';
@@ -159,17 +320,123 @@ Secciones:
             }
         } else if (selectCambiada.id == 'seccion3') {
             if (selectCambiada.value == '') {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
+                selectSeccion3.style.display = 'block';
                 selectSeccion4.style.display = 'none';
                 selectSeccion4.value = '';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'true';
+                btnAddSec2.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec2.onclick = null;
+                btnAddSec3.style.display = 'block';
+                btnAddSec3.style.disabled = 'false';
+                btnAddSec3.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec3.setAttribute('onclick', 'abrirModal(this)');
+                btnAddSec4.style.display = 'none';
                 selectFormulario.value = selectSeccion2.value;
             } else {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
+                selectSeccion3.style.display = 'block';
                 selectSeccion4.style.display = 'block';
                 selectSeccion4.value = '';
                 selectFormulario.value = selectCambiada.value;
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'true';
+                btnAddSec2.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec2.onclick = null;
+                btnAddSec3.style.display = 'block';
+                btnAddSec3.style.disabled = 'true';
+                btnAddSec3.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec3.onclick = null;
+                btnAddSec4.style.display = 'block';
+                btnAddSec4.style.disabled = 'false';
+                btnAddSec4.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec4.setAttribute('onclick', 'abrirModal(this)');
 
                 const opciones = selectSeccion4.options;
                 for (let i=0 ; i < opciones.length; i++){
-                    if (opciones[i].dataset.padre == selectCambiada.value){
+                    if (opciones[i].dataset.padre == selectCambiada.value || opciones[i].value == ''){
+                        opciones[i].style.display = 'block';
+                    } else {
+                        opciones[i].style.display = 'none';
+                    }
+                }
+            }
+        } else if (selectCambiada.id == 'seccion4') {
+            if (selectCambiada.value == '') {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
+                selectSeccion3.style.display = 'block';
+                selectSeccion4.style.display = 'block';
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'true';
+                btnAddSec2.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec2.onclick = null;
+                btnAddSec3.style.display = 'block';
+                btnAddSec3.style.disabled = 'true';
+                btnAddSec3.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec3.onclick = null;
+                btnAddSec4.style.display = 'block';
+                btnAddSec4.style.disabled = 'false';
+                btnAddSec4.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec4.setAttribute('onclick', 'abrirModal(this)');
+                selectFormulario.value = selectSeccion3.value;
+            } else {
+                selectSeccion1.style.display = 'block';
+                selectSeccion2.style.display = 'block';
+                selectSeccion3.style.display = 'block';
+                selectSeccion4.style.display = 'block';
+                selectFormulario.value = selectCambiada.value;
+                btnAddSec0.style.display = 'block';
+                btnAddSec0.style.disabled = 'true';
+                btnAddSec0.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec0.onclick = null;
+                btnAddSec1.style.display = 'block';
+                btnAddSec1.style.disabled = 'true';
+                btnAddSec1.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec1.onclick = null;
+                btnAddSec2.style.display = 'block';
+                btnAddSec2.style.disabled = 'true';
+                btnAddSec2.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec2.onclick = null;
+                btnAddSec3.style.display = 'block';
+                btnAddSec3.style.disabled = 'true';
+                btnAddSec3.classList.replace('text-bg-primary', 'text-bg-secondary');
+                btnAddSec3.onclick = null;
+                btnAddSec4.style.display = 'block';
+                btnAddSec4.style.disabled = 'false';
+                btnAddSec4.classList.replace('text-bg-secondary', 'text-bg-primary');
+                btnAddSec4.setAttribute('onclick', 'abrirModal(this)');
+
+                const opciones = selectSeccion4.options;
+                for (let i=0 ; i < opciones.length; i++){
+                    if (opciones[i].dataset.padre == selectCambiada.value || opciones[i].value == ''){
                         opciones[i].style.display = 'block';
                     } else {
                         opciones[i].style.display = 'none';
@@ -177,6 +444,65 @@ Secciones:
                 }
             }
         }
+    }
+
+    //Si tengo datos del modal de alta de sección, los uso para rellenar el alta del vídeo
+    document.getElementById('id_nombre').value = '{{ datos_form2.nombre }}';
+    document.getElementById('id_enlace').value = '{{ datos_form2.enlace }}';
+    document.getElementById('id_fecha').value = '{{ datos_form2.fecha }}';
+    selectSeccion0.value = '{{ datos_form2.seccion0 }}';
+    selectSeccion1.value = '{{ datos_form2.seccion1 }}';
+    selectSeccion2.value = '{{ datos_form2.seccion2 }}';
+    selectSeccion3.value = '{{ datos_form2.seccion3 }}';
+    selectSeccion4.value = '{{ datos_form2.seccion4 }}';
+
+    //Me aseguro de que las secciones se muestren correctamente
+    if ( '{{ datos_form2.seccion0 }}' == '' ) {
+        mostrarSelects(selectSeccion0);
+    } else if ( '{{ datos_form2.seccion1 }}' == '' ) {
+        mostrarSelects(selectSeccion1);
+    } else if ( '{{ datos_form2.seccion2 }}' == '' ) {
+        mostrarSelects(selectSeccion2);
+    } else if ( '{{ datos_form2.seccion3 }}' == '' ) {
+        mostrarSelects(selectSeccion3);
+    } else if ( '{{ datos_form2.seccion4 }}' == '' ) {
+        mostrarSelects(selectSeccion4);
+    } else {
+        mostrarSelects(selectSeccion4);
+    }
+    
+    //Función para abrir modal alta de sección
+    function abrirModal(boton) {
+        const boton_activado = boton.id;
+        const modalAltaSeccion = document.getElementById('altaSeccion');
+
+        if (boton.id == 'btnAddSec0') {
+            modalAltaSeccion.querySelector("[id='id_padre']").value = '';
+            modalAltaSeccion.querySelector("[id='id_orden']").value = document.getElementById('seccion0').options.length;
+        } else if (boton.id == 'btnAddSec1') {
+            modalAltaSeccion.querySelector("[id='id_padre']").value = document.getElementById('seccion0').value;
+            modalAltaSeccion.querySelector("[id='id_orden']").value = document.getElementById('seccion1').options.length;
+        } else if (boton.id == 'btnAddSec2') {
+            modalAltaSeccion.querySelector("[id='id_padre']").value = document.getElementById('seccion1').value;
+            modalAltaSeccion.querySelector("[id='id_orden']").value = document.getElementById('seccion2').options.length;
+        } else if (boton.id == 'btnAddSec3') {
+            modalAltaSeccion.querySelector("[id='id_padre']").value = document.getElementById('seccion2').value;
+            modalAltaSeccion.querySelector("[id='id_orden']").value = document.getElementById('seccion3').options.length;
+        } else if (boton.id == 'btnAddSec4') {
+            modalAltaSeccion.querySelector("[id='id_padre']").value = document.getElementById('seccion3').value;
+            modalAltaSeccion.querySelector("[id='id_orden']").value = document.getElementById('seccion4').options.length;
+        }
+
+        document.getElementById('fNombre').value = document.getElementById('id_nombre').value;
+        document.getElementById('fEnlace').value = document.getElementById('id_enlace').value;
+        document.getElementById('fFecha').value = document.getElementById('id_fecha').value;
+        document.getElementById('fSeccion0').value = document.getElementById('seccion0').value;
+        document.getElementById('fSeccion1').value = document.getElementById('seccion1').value;
+        document.getElementById('fSeccion2').value = document.getElementById('seccion2').value;
+        document.getElementById('fSeccion3').value = document.getElementById('seccion3').value;
+        
+        const modal = new bootstrap.Modal(modalAltaSeccion);
+        modal.show();
     }
 </script>
 {% endblock %}

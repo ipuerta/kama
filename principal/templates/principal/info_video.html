@@ -17,7 +17,7 @@
             <li class="list-group-item">Secciones:
                 {% if seccionesFiltradas %}
                 <ul class="list-group mt-2" id="detalle">
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in seccionesFiltradas %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in seccionesFiltradas %}
                     <li class="list-group-item"><input type="hidden" id="hidden_nivel{{nivel}}" data-id="{{ id_seccion }}">{{ nombre_seccion }}</li>
                 {% endfor %}
                 </ul>
@@ -34,7 +34,7 @@
                 {% if secciones %}
                     <select name="seccion0" class="form-select" required="" id="seccion0" onchange="mostrarSelects(this)">
                         <option value="" selected="">---------</option>
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
                 {% if nivel == 0 %}
                         <option value="{{id_seccion}}">{{ nombre_seccion }}</option>
                 {% endif %}
@@ -43,7 +43,7 @@
 
                     <select name="seccion1" class="form-select" required="" id="seccion1" style="display: none;" onchange="mostrarSelects(this)">
                         <option value="" selected="">---------</option>
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
                 {% if nivel == 1 %}
                         <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
                 {% endif %}
@@ -52,7 +52,7 @@
 
                     <select name="seccion2" class="form-select" id="seccion2" style="display: none;" onchange="mostrarSelects(this)">
                         <option value="" selected="">---------</option>
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
                 {% if nivel == 2 %}
                         <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
                 {% endif %}
@@ -61,7 +61,7 @@
 
                     <select name="seccion3" class="form-select" id="seccion3" style="display: none;" onchange="mostrarSelects(this)">
                         <option value="" selected="">---------</option>
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
                 {% if nivel == 3 %}
                         <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
                 {% endif %}
@@ -70,7 +70,7 @@
 
                     <select name="seccion4" class="form-select" id="seccion4" style="display: none;">
                         <option value="" selected="">---------</option>
-                {% for id_seccion, nombre_seccion, seleccionable, nivel, idPadre in secciones %}
+                {% for id_seccion, nombre_seccion, nivel, idPadre in secciones %}
                 {% if nivel == 4 %}
                         <option value="{{ id_seccion }}" data-padre="{{ idPadre }}" style="display: none;">{{ nombre_seccion }}</option>
                 {% endif %}
