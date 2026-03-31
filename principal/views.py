@@ -25,7 +25,7 @@ def obtenerArbolSecciones(seccionesFiltrar):
             obtenerIdPadres (s.id)
 
     # Obtener todas las secciones
-    seccionesPadres = Secciones.objects.filter(id__in=idsSecciones, padre__isnull=True)
+    seccionesPadres = Secciones.objects.filter(id__in=idsSecciones, padre__isnull=True).order_by('orden')
 
     # Ordenar las secciones y añadir el nivel
     arbolSecciones = []
