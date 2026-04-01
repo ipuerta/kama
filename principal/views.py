@@ -76,14 +76,14 @@ def alta_grupo(request):
     if request.method == 'POST':
         form = AltaGrupoForm(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, 'principal/inicio.html', contexto)
-    else:
-        form = AltaGrupoForm()
-        contexto = {
-            'paises': paises,
-            'form': form
-        }
+            grupo = form.save()
+            return redirect('info_grupo',  id=grupo.id)
+
+    form = AltaGrupoForm()
+    contexto = {
+        'paises': paises,
+        'form': form
+    }
      
     return render(request, 'principal/alta_grupo.html', contexto)
 
@@ -160,14 +160,16 @@ def alta_artista(request):
     if request.method == 'POST':
         form = AltaArtistaForm(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, 'principal/inicio.html', contexto)
-    else:
-        form = AltaArtistaForm()
-        contexto = {
-            'paises': paises,
-            'form': form
-        }
+            artista = form.save()
+            return redirect('info_artista',  id=artista.id)
+
+    ciudades = Ciudades.objects.all()
+    form = AltaArtistaForm()
+    contexto = {
+        'paises': paises,
+        'ciudades': ciudades,
+        'form': form
+    }
      
     return render(request, 'principal/alta_artista.html', contexto)
 
@@ -279,14 +281,14 @@ def alta_pais(request):
     if request.method == 'POST':
         form = AltaPais(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, 'principal/inicio.html', contexto)
-    else:
-        form = AltaPais()
-        contexto = {
-            'paises': paises,
-            'form': form
-        }
+            pais = form.save()
+            return redirect('info_pais',  id=pais.id)
+    
+    form = AltaPais()
+    contexto = {
+        'paises': paises,
+        'form': form
+    }
      
     return render(request, 'principal/alta_pais.html', contexto)
 
@@ -299,14 +301,14 @@ def alta_compañia(request):
     if request.method == 'POST':
         form = AltaCompañia(request.POST)
         if form.is_valid():
-            form.save()
-            return render(request, 'principal/inicio.html', contexto)
-    else:
-        form = AltaCompañia()
-        contexto = {
-            'paises': paises,
-            'form': form
-        }
+            compañia = form.save()
+            return redirect('info_compañia',  id=compañia.id)
+    
+    form = AltaCompañia()
+    contexto = {
+        'paises': paises,
+        'form': form
+    }
      
     return render(request, 'principal/alta_comp.html', contexto)
 

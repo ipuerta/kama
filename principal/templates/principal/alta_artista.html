@@ -10,5 +10,45 @@
     <button class="btn btn-primary" type="submit">Guardar</button>
 </div>
 
+<div style="display: none;">
+    <select name="seccion4" class="form-select" id="ciudadesFiltrar" style="display: none;">
+    {% for ciudad in ciudades %}
+        <option value="{{ ciudad.id }}" data-padre="{{ ciudad.pais.id }}" style="display: none;">{{ ciudad.nombre }}</option>
+    {% endfor %}
+</div>
+
 </form>
+
+<script>
+    //Recojo los campos de País y Cuidad
+    const selectCiudad = document.getElementById('id_ciudad');
+    const selectCiudadFiltrar = document.getElementById('ciudadesFiltrar');
+
+    function filtrarCiudades(selectPais) {
+        selectCiudad.value = '';
+
+        const opciones = selectCiudad.options;
+        const opcionesFiltrar = selectCiudadFiltrar.options;
+        var valorDisplay = 'none';
+
+        for (let i=0 ; i < opcionesFiltrar.length; i++) {
+            if (opcionesFiltrar[i].dataset.padre == selectPais.value){
+                valorDisplay = 'block';
+            } else {
+                valorDisplay = 'none';
+            }
+
+            for (let j=0 ; j < opciones.length; j++) {
+                if (opciones[j].value == opcionesFiltrar[i].value) {
+                    opciones[j].style.display = valorDisplay;
+                } else if (opciones[j].value == '') {
+                    opciones[j].style.display = 'block';
+                }
+            }
+        }
+    }
+
+    document.getElementById('id_pais').setAttribute('onchange', 'filtrarCiudades(this)');
+    filtrarCiudades(document.getElementById('id_pais'));
+</script>
 {% endblock %}
