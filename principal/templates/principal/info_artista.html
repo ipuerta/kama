@@ -26,7 +26,14 @@
                 </svg>
             </li>
             <li class="list-group-item">{{ form.ciudad.label_tag }} {{ artista.ciudad }}</li>
-            <li class="list-group-item">{{ form.enlace.label_tag }} {{ artista.enlace }} </li>
+            <li class="list-group-item">
+                {{ form.enlace.label_tag }} 
+                <a class="link-underline link-underline-opacity-0" style="color:black;" href="{{ artista.enlace }}" target="_blank">{{ artista.enlace }}</a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link-45deg" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243z"/>
+                </svg>
+            </li>
             <li class="list-group-item bg-primary bg-opacity-25 text-center" onClick="activarEdicion()">Editar</li>
         </ul>
         <ul class="list-group" id="formulario" style="display:none;">
@@ -53,7 +60,7 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if compañias %}
             {% for compañia in compañias %}
-                <div class="card text-bg-secondary">
+                <div class="card text-bg-secondary mb-1">
                     <div class="container text-center">
                         <div class="row align-items-center">
                             <div class="col">
@@ -107,7 +114,7 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if relaciones %}
             {% for relacion in relaciones %}
-                <div class="card text-bg-secondary">
+                <div class="card text-bg-secondary mb-1">
                     <div class="container text-center">
                         <div class="row align-items-center">
                             <div class="col">
@@ -170,16 +177,16 @@
 
             <div class="card-body text-bg-light justify-content-center">
             {% if arbolSecciones %}
-                <div class="accordion">
+                <div class="accordion" id="acordeon">
                 {% for id_seccion, nombre_seccion, nivel, idPadre in arbolSecciones %}
                 {% if nivel == 0 %}
-                    <div class="accordion-item" id="accordionSeccion{{ idPadre }}">
+                    <div class="accordion-item" id="accordionSeccion{{ id_seccion }}" data-nivel="{{ nivel }}" data-id="{{ id_seccion }}">
                         <div class="accordion-header">
-                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{ idPadre }}" aria-expanded="true" aria-controls="accordion{{ idPadre }}">{{ nombre_seccion }}</button>
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{ id_seccion }}" aria-expanded="true" aria-controls="accordion{{ id_seccion }}">{{ nombre_seccion }}</button>
                         </div>
                     </div>
                 {% else %}
-                    <div id="accordion{{ idPadre }}" class="accordion-collapse collapse show">
+                    <div class="accordion-collapse collapse show" data-nivel="{{ nivel }}">
                         <div class="accordion-body">
                             <div class="row justify-content-start">
                             <div class="col bg-primary bg-opacity-25">
@@ -189,7 +196,7 @@
                             {% for video in videos %}
                                 {% if video.seccion.id == id_seccion %} 
                                     <div class="row g-4">
-                                    <div class="col-4 col-md-4 align-items-center">
+                                    <div class="col align-items-center">
                                         <a class="link-underline link-underline-opacity-0" style="color:black;" href="{% url 'info_video' video.id %}">
                                             {{ video.fecha|date:'Y-m-d' }} - {{ video.nombre }}
                                         </a>
@@ -305,6 +312,22 @@ function abrirModal(boton) {
 
     const modal = new bootstrap.Modal(document.getElementById(dato_modal));
     modal.show();
+}
+
+// Asignar id a los elementos del acordeón
+
+const acordeon = document.getElementById("acordeon");
+var etiqueta = acordeon.querySelectorAll('div')[0];
+var padre = "0";
+
+for (let i=0 ; i < acordeon.querySelectorAll('div').length; i++){
+    var etiqueta = acordeon.querySelectorAll('div')[i];
+
+    if (etiqueta.dataset.nivel == "0") {
+        padre = etiqueta.dataset.id;
+    } else if (etiqueta.dataset.nivel !== undefined) {
+        etiqueta.setAttribute("id", "accordion"+padre);
+    }
 }
 </script>
 {% endblock %}

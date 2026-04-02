@@ -302,7 +302,7 @@ def alta_compañia(request):
         form = AltaCompañia(request.POST)
         if form.is_valid():
             compañia = form.save()
-            return redirect('info_compañia',  id=compañia.id)
+            return redirect('info_comp',  id=compañia.id)
     
     form = AltaCompañia()
     contexto = {
