@@ -436,7 +436,7 @@ def info_video(request, id):
 
     if request.method == 'POST':
 
-        if request.POST.get("formulario") == "modCompañia":
+        if request.POST.get("formulario") == "modVideo":
             form = AltaVideo(request.POST, instance=video)
             if form.is_valid():
                 form.save()

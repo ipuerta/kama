@@ -60,7 +60,11 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if compañias %}
             {% for compañia in compañias %}
+                {% if compañia.fecha_hasta %}
+                <div class="card text-bg-danger mb-1">
+                {% else %}
                 <div class="card text-bg-secondary mb-1">
+                {% endif %}
                     <div class="container text-center">
                         <div class="row align-items-center">
                             <div class="col">
@@ -114,7 +118,11 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if relaciones %}
             {% for relacion in relaciones %}
+                {% if relacion.fecha_hasta %}
+                <div class="card text-bg-danger mb-1">
+                {% else %}
                 <div class="card text-bg-secondary mb-1">
+                {% endif %}
                     <div class="container text-center">
                         <div class="row align-items-center">
                             <div class="col">
@@ -180,17 +188,21 @@
                 <div class="accordion" id="acordeon">
                 {% for id_seccion, nombre_seccion, nivel, idPadre in arbolSecciones %}
                 {% if nivel == 0 %}
+                    {% if id_seccion != 1 %}
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="accordion-item" id="accordionSeccion{{ id_seccion }}" data-nivel="{{ nivel }}" data-id="{{ id_seccion }}">
                         <div class="accordion-header">
                             <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{ id_seccion }}" aria-expanded="true" aria-controls="accordion{{ id_seccion }}">{{ nombre_seccion }}</button>
                         </div>
                     </div>
-                {% else %}
-                    <div class="accordion-collapse collapse show" data-nivel="{{ nivel }}">
+                    <div class="accordion-collapse collapse show" data-nivel="{{ nivel }}" id="accordion{{ id_seccion }}">
                         <div class="accordion-body">
-                            <div class="row justify-content-start">
+                {% else %}
+                            <div class="row justify-content-start mb-1">
                             <div class="col bg-primary bg-opacity-25">
-                                    <h6 class="">{{ nombre_seccion }}</h6>
+                                    <h6 class="ms-{{ nivel }}">{{ nombre_seccion }}</h6>
                             </div>
                             </div>
                             {% for video in videos %}
@@ -210,10 +222,10 @@
                                     </div>
                                 {% endif %}
                             {% endfor %}
-                        </div>
-                    </div>
                 {% endif %}
                 {% endfor %}
+                        </div>
+                    </div>
                 </div>
             {% endif %}
             </div>
