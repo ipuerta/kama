@@ -185,12 +185,12 @@
             <div class="card-body text-bg-light justify-content-center">
             {% if arbolSecciones %}
                 <div class="accordion" id="acordeon">
+                    <div>
+                        <div>
                 {% for id_seccion, nombre_seccion, nivel, idPadre in arbolSecciones %}
                 {% if nivel == 0 %}
-                    {% if id_seccion != 1 %}
                         </div>
                     </div>
-                    {% endif %}
                     <div class="accordion-item" id="accordionSeccion{{ id_seccion }}" data-nivel="{{ nivel }}" data-id="{{ id_seccion }}">
                         <div class="accordion-header">
                             <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{{ id_seccion }}" aria-expanded="true" aria-controls="accordion{{ id_seccion }}">{{ nombre_seccion }}</button>
