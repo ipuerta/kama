@@ -18,6 +18,7 @@ urlpatterns = [
     ), name='password_change_done'),
 
     path('grupos/', views.grupos, name='grupos'),
+    path('subgrupos/', views.subgrupos, name='subgrupos'),
     path('alta_grupo/', views.alta_grupo, name='alta_grupo'),
     path('grupos/<int:id>', views.info_grupo, name='info_grupo'),
     

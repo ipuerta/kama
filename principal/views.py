@@ -36,7 +36,7 @@ def obtenerArbolSecciones(seccionesFiltrar):
 
             arbolSecciones.append((nodo.id, nodo.nombre, nivel, idPadre))
             
-            hijos = nodo.hijos.filter(id__in=idsSecciones).order_by('orden')
+            hijos = nodo.hijos.filter(id__in=idsSecciones).order_by('nombre')
             ordenar(hijos, nodo.id, nivel + 1)
 
     ordenar(seccionesPadres)
@@ -59,6 +59,17 @@ def login_view(request):
 def grupos(request):
     paises = Paises.objects.all().order_by(Lower('nombre'))
     grupos = Grupos.objects.all().order_by(Lower('nombre'))
+
+    contexto = {
+        'paises': paises,
+        'grupos': grupos
+    }
+
+    return render(request, 'principal/listado_grupos.html', contexto)
+
+def subgrupos(request):
+    paises = Paises.objects.all().order_by(Lower('nombre'))
+    grupos = Grupos.objects.all().exclude(padre__isnull=True).order_by(Lower('nombre'))
 
     contexto = {
         'paises': paises,
